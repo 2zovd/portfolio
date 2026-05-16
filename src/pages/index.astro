@@ -1,17 +1,13 @@
 ---
-
+import PageLayout from '@app/layouts/PageLayout.astro';
+import Hero from '@widgets/Hero/Hero.astro';
+import { SITE } from '@shared/config/site';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<PageLayout
+  title={`${SITE.name} · ${SITE.role}`}
+  description={SITE.description}
+  schema
+>
+  <Hero />
+</PageLayout>
