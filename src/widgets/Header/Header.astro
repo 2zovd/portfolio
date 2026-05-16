@@ -1,6 +1,7 @@
 ---
 import { SITE } from '@shared/config/site';
 import { ThemeToggle } from '@features/ThemeToggle';
+import { MobileNav } from '@features/MobileNav';
 import styles from './Header.module.scss';
 
 const pathname = Astro.url.pathname;
@@ -34,7 +35,7 @@ const pathname = Astro.url.pathname;
     <div class={styles.actions}>
       <a
         href={`mailto:${SITE.email}`}
-        class={styles.actions__email}
+        class={`${styles.actions__email} ${styles['actions__email--desktop']}`}
         aria-label="Send email"
       >
         <svg
@@ -54,6 +55,7 @@ const pathname = Astro.url.pathname;
         </svg>
       </a>
       <ThemeToggle client:load />
+      <MobileNav client:load />
     </div>
   </div>
 </header>

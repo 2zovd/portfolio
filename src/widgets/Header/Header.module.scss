@@ -117,3 +117,9 @@
     color: var(--color-text);
   }
 }
+
+.actions__email--desktop {
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
