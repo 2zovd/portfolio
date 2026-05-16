@@ -1,0 +1,12 @@
+// Global stylesheet — imported once in BaseLayout.astro.
+// Order matters: tokens first (defines vars), then reset (uses vars), then typography.
+
+@use 'tokens' as *;
+@use 'reset';
+@use 'typography';
+
+// .site wrapper — applied in PageLayout around all page content.
+.site {
+  @include grid-background;
+  min-height: 100dvh;
+}
