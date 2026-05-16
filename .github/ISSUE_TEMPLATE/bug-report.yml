@@ -1,0 +1,67 @@
+name: Bug report
+description: A preset fails to install, typecheck, lint, or test — or INIT.md leaves the project broken.
+labels: [bug]
+body:
+  - type: dropdown
+    id: preset
+    attributes:
+      label: Affected preset
+      options:
+        - nuxt-app
+        - vue-vite
+        - _empty
+        - core (CLAUDE.md / agent_docs / commands)
+        - bootstrap (INIT.md)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: step
+    attributes:
+      label: Failing step
+      options:
+        - pnpm install
+        - pnpm typecheck
+        - pnpm lint
+        - pnpm test:run
+        - pnpm build
+        - INIT.md bootstrap
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Clone the repo
+        2. cd presets/nuxt-app
+        3. pnpm install
+        4. pnpm typecheck
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Error output
+      render: shell
+    validations:
+      required: true
+
+  - type: input
+    id: node
+    attributes:
+      label: Node version
+      placeholder: "e.g. 20.11.0"
+    validations:
+      required: true
+
+  - type: input
+    id: pnpm
+    attributes:
+      label: pnpm version
+      placeholder: "e.g. 9.12.3"
+    validations:
+      required: true

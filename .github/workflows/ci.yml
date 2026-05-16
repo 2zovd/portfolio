@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-structure:
+    name: Validate template structure
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required files exist
+        run: |
+          for f in INIT.md README.md CONTRIBUTING.md CHANGELOG.md LICENSE; do
+            [ -f "$f" ] || (echo "Missing: $f" && exit 1)
+          done
+          echo "Root files: OK"
+
+      - name: Check guides/ directory
+        run: |
+          for f in guides/how-to-claude-md.md guides/how-to-agents-md.md guides/how-to-skills.md guides/how-to-hooks.md guides/how-to-agent-docs.md; do
+            [ -f "$f" ] || (echo "Missing: $f" && exit 1)
+          done
+          echo "guides/: OK"
+
+      - name: Check templates/ directory
+        run: |
+          for f in templates/CLAUDE.md.template templates/AGENTS.md.template templates/settings.json; do
+            [ -f "$f" ] || (echo "Missing: $f" && exit 1)
+          done
+          echo "templates/: OK"
+
+      - name: Check examples/ directory
+        run: |
+          [ -d "examples/" ] || (echo "Missing: examples/" && exit 1)
+          # Each example must have CLAUDE.md and AGENTS.md
+          for dir in examples/*/; do
+            [ -f "${dir}CLAUDE.md" ] || (echo "Missing CLAUDE.md in $dir" && exit 1)
+            [ -f "${dir}AGENTS.md" ] || (echo "Missing AGENTS.md in $dir" && exit 1)
+          done
+          echo "examples/: OK"
+
+      - name: Check example CLAUDE.md line counts (max 150)
+        run: |
+          for f in examples/*/CLAUDE.md; do
+            lines=$(wc -l < "$f")
+            if [ "$lines" -gt 150 ]; then
+              echo "FAIL: $f has $lines lines (max 150)"
+              exit 1
+            fi
+          done
+          echo "CLAUDE.md line counts: OK"
+
+      - name: Check .claude/agents exists
+        run: |
+          [ -f ".claude/agents/code-reviewer.md" ] || (echo "Missing: .claude/agents/code-reviewer.md" && exit 1)
+          echo ".claude/agents/: OK"

@@ -1,0 +1,37 @@
+# [PROJECT_NAME]
+
+[DESCRIPTION_2_TO_3_SENTENCES]
+
+## Repo layout
+
+```
+[DIR_1]/        — [description]
+[DIR_2]/        — [description]
+[KEY_FILE_1]    — [description]
+[KEY_FILE_2]    — [description]
+```
+
+## Commands
+
+```
+[INSTALL_COMMAND]     — install dependencies
+[DEV_COMMAND]         — run in development
+[BUILD_COMMAND]       — compile output
+[TEST_COMMAND]        — run test suite
+[TYPECHECK_COMMAND]   — type check
+[LINT_COMMAND]        — lint check
+```
+
+## Conventions
+
+<!-- Code style, naming, patterns used throughout the codebase. -->
+
+[CONVENTION_1]
+[CONVENTION_2]
+
+## Constraints
+
+<!-- Hard rules with real consequences if violated. -->
+
+[CONSTRAINT_1]
+[CONSTRAINT_2]

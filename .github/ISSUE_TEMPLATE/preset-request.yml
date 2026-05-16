@@ -1,0 +1,38 @@
+name: Contribution request
+description: Suggest an improvement to guides, templates, or examples.
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Contribution type
+      options:
+        - Improve a guide (guides/)
+        - Add or improve an example (examples/)
+        - Improve a template (templates/)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's wrong or missing?
+      description: Describe what doesn't work well, is confusing, or is absent.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What should be added, changed, or removed?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: willing
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to submit a PR for this change

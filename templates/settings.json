@@ -1,0 +1,98 @@
+{
+  "_readme": "Copy to .claude/settings.json. Adapt commands to your stack. Hooks are deterministic — they run regardless of what Claude decides. Permissions pre-approve commands so Claude doesn't ask every time.",
+
+  "_mcp_readme": "MCP servers extend Claude with filesystem access, web search, databases, GitHub, etc. Remove this block if you don't need it. See https://modelcontextprotocol.io for the full server list.",
+  "mcpServers": {
+    "_note": "Remove this _note key before use. Uncomment what you need.",
+
+    "filesystem": {
+      "_comment": "Read/write access to directories outside the workspace.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/dir"]
+    },
+
+    "github": {
+      "_comment": "GitHub API: issues, PRs, files. Requires GITHUB_PERSONAL_ACCESS_TOKEN.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  },
+
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git push)",
+      "Bash(git checkout*)",
+      "Bash(git branch*)",
+      "Bash(git stash*)",
+      "Bash(gh pr*)",
+      "Bash(gh issue*)",
+      "Bash(ls*)",
+      "Bash(find*)",
+      "Bash(cat*)",
+      "Bash(mkdir*)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(rm -rf*)"
+    ],
+    "_package_manager_note": "Add your package manager commands below. Examples:",
+    "_examples": [
+      "Bash(pnpm install)", "Bash(pnpm add *)", "Bash(pnpm dev)", "Bash(pnpm build)", "Bash(pnpm test:run)", "Bash(pnpm typecheck)", "Bash(pnpm lint*)",
+      "Bash(npm install)", "Bash(npm run *)",
+      "Bash(pip install *)", "Bash(uv add *)", "Bash(python *)",
+      "Bash(cargo build)", "Bash(cargo test)", "Bash(cargo run)"
+    ]
+  },
+
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "_comment": "Auto-format on every file edit. Replace with your stack's formatter. Examples:",
+            "_node": "pnpm lint:fix --reporter=silent 2>&1 || true",
+            "_python": "ruff format . 2>&1 || true",
+            "_rust": "cargo fmt 2>&1 || true",
+            "command": "echo 'Add your formatter command here' 2>&1 || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "_comment": "Typecheck before Claude ends its turn. Replace with your stack's type check. Examples:",
+            "_node": "pnpm typecheck 2>&1",
+            "_python": "mypy src/ 2>&1",
+            "_rust": "cargo check 2>&1",
+            "command": "echo 'Add your typecheck command here' 2>&1 || true"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "_comment": "Runs once when Claude Code launches. Optional — use for health checks or status messages.",
+            "command": "echo 'Session started.' 2>&1 || true"
+          }
+        ]
+      }
+    ]
+  }
+}

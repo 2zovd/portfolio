@@ -1,0 +1,42 @@
+# [PROJECT_NAME]
+
+[ONE_LINE_DESCRIPTION]
+
+## Stack
+
+[LANGUAGE] [FRAMEWORK_OR_RUNTIME] [KEY_DEPENDENCIES]
+
+## Commands
+
+```
+[INSTALL_COMMAND]        — install dependencies
+[DEV_OR_RUN_COMMAND]    — run in development / execute
+[BUILD_COMMAND]         — compile or bundle
+[TEST_COMMAND]          — run test suite
+[TYPECHECK_COMMAND]     — static type check (if applicable)
+[LINT_COMMAND]          — lint / format check
+```
+
+## Key files
+
+```
+[PATH_TO_FILE_1]   — [what it does]
+[PATH_TO_FILE_2]   — [what it does]
+[PATH_TO_FILE_3]   — [what it does]
+```
+
+## Domain rules
+
+<!-- Only include rules an AI would not guess from the code.
+     Examples: content/style constraints, NDA areas, algorithmic choices, data invariants.
+     Remove this section if there are no project-specific rules. -->
+
+[RULE_1]
+[RULE_2]
+
+## Notes
+
+<!-- Things to remember across sessions: environment quirks, known traps, setup requirements.
+     Remove this section if nothing non-obvious applies. -->
+
+[NOTE_1]
