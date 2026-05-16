@@ -15,6 +15,7 @@ export default defineConfig({
         statements: 80,
       },
       include: ['src/shared/ui/**', 'src/features/**'],
+      exclude: ['**/index.ts', '**/*.test.ts'],
     },
   },
 });
