@@ -1,0 +1,59 @@
+---
+import { SITE } from '@shared/config/site';
+import { ThemeToggle } from '@features/ThemeToggle';
+import styles from './Header.module.scss';
+
+const pathname = Astro.url.pathname;
+---
+
+<header class={styles.header}>
+  <div class={styles.inner}>
+    <a href="/" class={styles.logo} aria-label={`${SITE.name} — home`}>
+      <span class={styles.logo__name}>{SITE.name}</span>
+      <span class={styles.logo__sep} aria-hidden="true">·</span>
+      <span class={styles.logo__role}>{SITE.role}</span>
+    </a>
+
+    <nav class={styles.nav} aria-label="Main navigation">
+      <ul class={styles.nav__list} role="list">
+        {SITE.nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class={styles.nav__link}
+              aria-current={pathname === item.href ? 'page' : undefined}
+              data-active={pathname === item.href ? '' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class={styles.actions}>
+      <a
+        href={`mailto:${SITE.email}`}
+        class={styles.actions__email}
+        aria-label="Send email"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect width="20" height="16" x="2" y="4" rx="2" />
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
+      </a>
+      <ThemeToggle client:load />
+    </div>
+  </div>
+</header>
