@@ -1,38 +1,24 @@
-# OS
-.DS_Store
-Thumbs.db
-
-# Editor
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Claude Code — local/personal files (machine-specific, not for sharing)
-.claude/settings.local.json
-CLAUDE.local.md
-
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
-
-# Build output
+# build output
 dist/
-.output/
-.nuxt/
-.cache/
+# generated types
+.astro/
 
-# Environment
-.env
-.env.local
-.env.*.local
+# dependencies
+node_modules/
 
-# Logs
-*.log
+# logs
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 pnpm-debug.log*
 
-# Test coverage
-coverage/
-.nyc_output/
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
