@@ -4,8 +4,16 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://dmytrotuzov.dev',
-  integrations: [
-    vue(),
-    sitemap(),
-  ],
+  integrations: [vue(), sitemap()],
+  vite: {
+    resolve: {
+      alias: {
+        '@shared': '/src/shared',
+        '@features': '/src/features',
+        '@widgets': '/src/widgets',
+        '@entities': '/src/entities',
+        '@app': '/src/app',
+      },
+    },
+  },
 });
