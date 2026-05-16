@@ -3,6 +3,7 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import vuePlugin from 'eslint-plugin-vue';
 import vueParser from 'vue-eslint-parser';
+import globals from 'globals';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -11,7 +12,10 @@ export default [
   {
     files: ['src/**/*.ts'],
     plugins: { '@typescript-eslint': tsPlugin },
-    languageOptions: { parser: tsParser },
+    languageOptions: {
+      parser: tsParser,
+      globals: { ...globals.browser, ...globals.es2022 },
+    },
     rules: {
       ...tsPlugin.configs['recommended'].rules,
       '@typescript-eslint/no-explicit-any': 'error',
@@ -33,6 +37,7 @@ export default [
         parser: tsParser,
         extraFileExtensions: ['.vue'],
       },
+      globals: { ...globals.browser, ...globals.es2022 },
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
