@@ -1,0 +1,142 @@
+---
+import BaseLayout from '@app/layouts/BaseLayout.astro';
+import { SITE } from '@shared/config/site';
+---
+
+<BaseLayout title={`404 · ${SITE.name}`} description="Page not found.">
+  <div class="page-404">
+    <div class="page-404__inner">
+      <div class="page-404__terminal">
+        <div class="page-404__bar">
+          <span class="page-404__dot" aria-hidden="true"></span>
+          <span class="page-404__dot" aria-hidden="true"></span>
+          <span class="page-404__dot" aria-hidden="true"></span>
+        </div>
+        <pre class="page-404__body"><code><span class="page-404__prompt">$</span> curl -I {SITE.url}/__this_page__
+<span class="page-404__value">HTTP/1.1 404 Not Found</span>
+<span class="page-404__value">Content-Type: text/html</span>
+
+<span class="page-404__prompt">$</span> <span class="page-404__cursor" aria-hidden="true"></span></code></pre>
+      </div>
+
+      <h1 class="page-404__heading">404</h1>
+      <p class="page-404__text">Page not found.</p>
+      <a href="/" class="page-404__link">← Back to home</a>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-404 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: var(--space-6);
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  :global(.light) .page-404 {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  }
+
+  .page-404__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-6);
+    text-align: center;
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .page-404__terminal {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    text-align: left;
+  }
+
+  .page-404__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .page-404__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-border);
+    flex-shrink: 0;
+  }
+
+  .page-404__body {
+    padding: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--color-text);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .page-404__prompt {
+    color: var(--color-accent);
+    user-select: none;
+  }
+
+  .page-404__value {
+    color: var(--color-muted);
+  }
+
+  .page-404__cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background-color: var(--color-accent);
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-404__cursor {
+      animation: none;
+    }
+  }
+
+  .page-404__heading {
+    font-size: 72px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--color-accent);
+  }
+
+  .page-404__text {
+    font-size: 16px;
+    color: var(--color-muted);
+  }
+
+  .page-404__link {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 2px;
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .page-404__link:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+</style>
