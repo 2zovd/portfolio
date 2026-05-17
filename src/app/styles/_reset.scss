@@ -1,0 +1,91 @@
+// Modern CSS reset — opinionated baseline for consistent cross-browser rendering.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  // Smooth theme transition — only on color properties to avoid transition on layout changes
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base);
+  -webkit-text-size-adjust: 100%;
+  tab-size: 2;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Remove list styles on elements with a list role (nav lists, etc.)
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+}
+
+// Sensible media defaults
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+// Inherit fonts for form controls
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+// Remove built-in form styling
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+// Avoid text overflow
+p,
+h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+// Anchor defaults
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+// Focus visible baseline — never suppress outline without replacement
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+// Reduce motion for users who prefer it — global reset
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
