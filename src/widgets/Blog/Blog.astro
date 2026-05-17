@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import SectionHeading from '@shared/ui/SectionHeading.astro';
+import PostCard from '@shared/ui/PostCard.astro';
+import styles from './Blog.module.scss';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<section class={styles.blog} aria-labelledby="blog-heading">
+  <div class={styles.container}>
+    <SectionHeading
+      id="blog-heading"
+      title="Blog"
+      subtitle="Thoughts on frontend architecture, TypeScript, and engineering craft."
+    />
+
+    {posts.length === 0 ? (
+      <p class={styles.empty}>No posts yet.</p>
+    ) : (
+      <ol class={styles.list} role="list">
+        {posts.map((post) => (
+          <li>
+            <PostCard
+              slug={post.id}
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              tags={post.data.tags}
+            />
+          </li>
+        ))}
+      </ol>
+    )}
+  </div>
+</section>
