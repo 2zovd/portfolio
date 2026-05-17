@@ -1,0 +1,110 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageLayout from '@app/layouts/PageLayout.astro';
+import Tag from '@shared/ui/Tag.astro';
+import { formatMonthYear, formatISO } from '@shared/lib/formatDate';
+import { SITE } from '@shared/config/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, description, pubDate, tags } = post.data;
+
+const ogImage = post.data.cover ?? '/og.png';
+---
+
+<PageLayout
+  title={`${title} · ${SITE.name}`}
+  description={description}
+  ogImage={ogImage}
+>
+  <article class="post-layout">
+    <header class="post-layout__header">
+      <div class="post-layout__meta">
+        <time class="post-layout__date" datetime={formatISO(pubDate)}>
+          {formatMonthYear(pubDate)}
+        </time>
+        {tags.length > 0 && (
+          <span class="post-layout__sep" aria-hidden="true">·</span>
+        )}
+        <div class="post-layout__tags">
+          {tags.map((tag) => <Tag label={tag} />)}
+        </div>
+      </div>
+
+      <h1 class="post-layout__title">{title}</h1>
+      <p class="post-layout__desc">{description}</p>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</PageLayout>
+
+<style>
+  .post-layout {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: var(--space-24) var(--space-6);
+  }
+
+  .post-layout__header {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .post-layout__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+  }
+
+  .post-layout__date {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-subtle);
+    white-space: nowrap;
+  }
+
+  .post-layout__sep {
+    color: var(--color-border-hover);
+  }
+
+  .post-layout__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .post-layout__title {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--color-text);
+    margin-bottom: var(--space-4);
+
+    @media (max-width: 767px) {
+      font-size: 24px;
+    }
+  }
+
+  .post-layout__desc {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+</style>

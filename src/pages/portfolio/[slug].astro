@@ -1,0 +1,157 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageLayout from '@app/layouts/PageLayout.astro';
+import Tag from '@shared/ui/Tag.astro';
+import { formatMonthYear, formatISO } from '@shared/lib/formatDate';
+import { SITE } from '@shared/config/site';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('portfolio');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, description, date, tags, links } = project.data;
+
+const ogImage = project.data.cover ?? '/og.png';
+
+const actionLinks = [
+  links.live ? { href: links.live, label: 'Live site', external: true } : null,
+  links.repo ? { href: links.repo, label: 'Repository', external: true } : null,
+  links.case ? { href: links.case, label: 'Case study', external: true } : null,
+].filter(Boolean) as { href: string; label: string; external: boolean }[];
+---
+
+<PageLayout
+  title={`${title} · ${SITE.name}`}
+  description={description}
+  ogImage={ogImage}
+>
+  <article class="project-layout">
+    <header class="project-layout__header">
+      <div class="project-layout__meta">
+        <time class="project-layout__date" datetime={formatISO(date)}>
+          {formatMonthYear(date)}
+        </time>
+        {tags.length > 0 && (
+          <span class="project-layout__sep" aria-hidden="true">·</span>
+        )}
+        <div class="project-layout__tags">
+          {tags.map((tag) => <Tag label={tag} />)}
+        </div>
+      </div>
+
+      <h1 class="project-layout__title">{title}</h1>
+      <p class="project-layout__desc">{description}</p>
+
+      {actionLinks.length > 0 && (
+        <nav class="project-layout__links" aria-label="Project links">
+          {actionLinks.map((link) => (
+            <a
+              href={link.href}
+              class="project-layout__link"
+              target={link.external ? '_blank' : undefined}
+              rel={link.external ? 'noopener noreferrer' : undefined}
+            >
+              {link.label}
+              {link.external && (
+                <span aria-hidden="true"> ↗</span>
+              )}
+            </a>
+          ))}
+        </nav>
+      )}
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</PageLayout>
+
+<style>
+  .project-layout {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: var(--space-24) var(--space-6);
+  }
+
+  .project-layout__header {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .project-layout__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+  }
+
+  .project-layout__date {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-subtle);
+    white-space: nowrap;
+  }
+
+  .project-layout__sep {
+    color: var(--color-border-hover);
+  }
+
+  .project-layout__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .project-layout__title {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--color-text);
+    margin-bottom: var(--space-4);
+
+    @media (max-width: 767px) {
+      font-size: 24px;
+    }
+  }
+
+  .project-layout__desc {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin-bottom: var(--space-5);
+  }
+
+  .project-layout__links {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .project-layout__link {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-accent);
+    padding-bottom: 1px;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+
+    &:hover {
+      color: var(--color-accent-hover);
+      border-color: var(--color-accent-hover);
+    }
+  }
+</style>

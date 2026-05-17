@@ -4,6 +4,7 @@
 @use 'tokens' as *;
 @use 'reset';
 @use 'typography';
+@use 'prose';
 
 // .site wrapper — applied in PageLayout around all page content.
 .site {
