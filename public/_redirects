@@ -1,1 +1,3 @@
+# CV download shortlink.
+# The PDF file must be placed at public/cv/dmytro-tuzov-cv.pdf before this redirect works.
 /cv  /cv/dmytro-tuzov-cv.pdf  301

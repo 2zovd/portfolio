@@ -6,7 +6,7 @@ type NavItem = {
 type Social = {
   label: string;
   href: string;
-  icon: 'github' | 'linkedin' | 'telegram';
+  icon: 'github' | 'linkedin';
 };
 
 type SiteConfig = {
@@ -32,12 +32,7 @@ export const SITE: SiteConfig = {
   email: 'dmy2zov@gmail.com',
   socials: [
     { label: 'GitHub', href: 'https://github.com/2zovd', icon: 'github' },
-    {
-      label: 'LinkedIn',
-      href: 'https://linkedin.com/in/dmytrotuzov',
-      icon: 'linkedin',
-    },
-    { label: 'Telegram', href: 'https://t.me/dmytrotuzov', icon: 'telegram' },
+    { label: 'LinkedIn', href: 'https://linkedin.com/in/dmytrotuzov', icon: 'linkedin' },
   ],
   nav: [
     { label: 'Work', href: '/portfolio' },
