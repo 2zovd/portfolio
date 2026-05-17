@@ -40,11 +40,18 @@ const personSchema = {
     {/* Theme flash prevention — must be the very first script, before any CSS or font */}
     <script is:inline>
       (function () {
-        var stored = localStorage.getItem('theme');
-        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (stored === 'light' || (!stored && !prefersDark)) {
-          document.documentElement.classList.add('light');
+        function applyTheme() {
+          var stored = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (stored === 'light' || (!stored && !prefersDark)) {
+            document.documentElement.classList.add('light');
+          } else {
+            document.documentElement.classList.remove('light');
+          }
         }
+        applyTheme();
+        // Re-apply after Astro View Transitions swaps the body
+        document.addEventListener('astro:after-swap', applyTheme);
       })();
     </script>
 

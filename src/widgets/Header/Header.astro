@@ -34,9 +34,10 @@ const pathname = Astro.url.pathname;
 
     <div class={styles.actions}>
       <a
-        href={`mailto:${SITE.email}`}
+        href="/contact"
         class={`${styles.actions__email} ${styles['actions__email--desktop']}`}
-        aria-label="Send email"
+        aria-label="Contact"
+        aria-current={pathname === '/contact' ? 'page' : undefined}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

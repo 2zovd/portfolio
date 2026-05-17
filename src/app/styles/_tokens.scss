@@ -2,6 +2,8 @@
 // Never use raw color, spacing, or radius values outside this file.
 
 :root {
+  color-scheme: dark;
+
   // --- Color: Dark theme (default) ---
   --color-bg:           #0c0c0a;
   --color-surface:      rgba(255, 255, 255, 0.02);
@@ -51,6 +53,8 @@
 
 // Light theme override — applied via class="light" on <html>
 .light {
+  color-scheme: light;
+
   --color-bg:           #f4f4f0;
   --color-surface:      rgba(0, 0, 0, 0.02);
   --color-border:       rgba(0, 0, 0, 0.08);
