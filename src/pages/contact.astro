@@ -1,5 +1,6 @@
 ---
 import PageLayout from '@app/layouts/PageLayout.astro';
+import { ContactForm } from '@features/ContactForm';
 import { SITE } from '@shared/config/site';
 ---
 
@@ -7,54 +8,81 @@ import { SITE } from '@shared/config/site';
   title={`Contact · ${SITE.name}`}
   description="Get in touch with Dmytro Tuzov — Frontend Engineer available for new opportunities."
 >
-  <section class="contact-stub" aria-labelledby="contact-heading">
-    <div class="contact-stub__container">
-      <p class="contact-stub__label">Contact</p>
-      <h1 id="contact-heading" class="contact-stub__heading">
-        Let's work together.
-      </h1>
-      <p class="contact-stub__text">
-        I'm currently available for new opportunities — full-time, contract, or consulting.
-        The best way to reach me is by email.
-      </p>
-      <a
-        href={`mailto:${SITE.email}`}
-        class="contact-stub__email"
-      >
-        {SITE.email}
-      </a>
+  <section class="contact" aria-labelledby="contact-heading">
+    <div class="contact__grid">
 
-      <div class="contact-stub__socials">
-        {SITE.socials.map((social) => (
-          <a
-            href={social.href}
-            class="contact-stub__social-link"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={social.label}
-          >
-            {social.label}
-          </a>
-        ))}
+      <!-- Left column: info -->
+      <div class="contact__info">
+        <p class="contact__label">Contact</p>
+        <h1 id="contact-heading" class="contact__heading">
+          Let's work together.
+        </h1>
+        <p class="contact__text">
+          I'm currently available for new opportunities — full-time, contract, or consulting.
+          Fill out the form or reach out directly.
+        </p>
+
+        <a
+          href={`mailto:${SITE.email}`}
+          class="contact__email"
+          aria-label={`Send email to ${SITE.name}`}
+        >
+          {SITE.email}
+        </a>
+
+        <div class="contact__socials">
+          {SITE.socials.map((social) => (
+            <a
+              href={social.href}
+              class="contact__social-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${social.label} profile`}
+            >
+              {social.label}
+            </a>
+          ))}
+        </div>
       </div>
+
+      <!-- Right column: form -->
+      <div class="contact__form-col">
+        <ContactForm client:load />
+      </div>
+
     </div>
   </section>
 </PageLayout>
 
+<!-- Turnstile must load after content, not in <head> -->
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
 <style>
-  .contact-stub {
-    max-width: 720px;
+  .contact {
+    max-width: 1100px;
     margin: 0 auto;
     padding: var(--space-24) var(--space-6);
   }
 
-  .contact-stub__container {
+  .contact__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-12);
+    align-items: start;
+
+    @media (max-width: 767px) {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .contact__info {
     display: flex;
     flex-direction: column;
     gap: var(--space-5);
   }
 
-  .contact-stub__label {
+  .contact__label {
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.08em;
@@ -62,7 +90,7 @@ import { SITE } from '@shared/config/site';
     color: var(--color-accent);
   }
 
-  .contact-stub__heading {
+  .contact__heading {
     font-size: 40px;
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -74,16 +102,16 @@ import { SITE } from '@shared/config/site';
     }
   }
 
-  .contact-stub__text {
+  .contact__text {
     font-size: 16px;
     line-height: 1.7;
     color: var(--color-muted);
-    max-width: 52ch;
+    max-width: 48ch;
   }
 
-  .contact-stub__email {
+  .contact__email {
     display: inline-block;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 500;
     letter-spacing: -0.01em;
     color: var(--color-text);
@@ -97,7 +125,7 @@ import { SITE } from '@shared/config/site';
     }
   }
 
-  .contact-stub__socials {
+  .contact__socials {
     display: flex;
     gap: var(--space-4);
     flex-wrap: wrap;
@@ -105,7 +133,7 @@ import { SITE } from '@shared/config/site';
     border-top: 1px solid var(--color-border);
   }
 
-  .contact-stub__social-link {
+  .contact__social-link {
     font-size: 12px;
     font-weight: 500;
     letter-spacing: 0.04em;
@@ -116,6 +144,17 @@ import { SITE } from '@shared/config/site';
 
     &:hover {
       color: var(--color-text);
+    }
+  }
+
+  .contact__form-col {
+    padding-top: var(--space-2);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact__email,
+    .contact__social-link {
+      transition: none;
     }
   }
 </style>
