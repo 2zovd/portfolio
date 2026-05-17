@@ -32,12 +32,52 @@
 
 // ─── Profile photo ───────────────────────────────────────────────────────────
 
+.about__photo_wrap {
+  position: relative;
+  display: block;
+  max-width: 240px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.08) 0px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity var(--transition-slow) var(--ease-out-expo);
+  }
+
+  &:hover::after {
+    opacity: 0;
+  }
+
+  &:hover .about__photo {
+    filter: none;
+  }
+}
+
 .about__photo {
   width: 100%;
-  max-width: 320px;
   height: auto;
   display: block;
   border: 1px solid var(--color-border);
+  filter: grayscale(100%) contrast(1.05);
+  transition: filter var(--transition-slow) var(--ease-out-expo);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about__photo_wrap::after {
+    transition: none;
+  }
 }
 
 // ─── Bio ─────────────────────────────────────────────────────────────────────

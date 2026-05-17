@@ -19,6 +19,16 @@ const stack = [
 
     <!-- Left column -->
     <div class={styles.hero__left}>
+      <div class={styles.hero__photo_wrap}>
+        <Image
+          src={photo}
+          alt="Dmytro Tuzov — Frontend Engineer"
+          class={styles.hero__photo}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+
       <div class={styles.tags} aria-label="Specializations">
         {tags.map((t) => <span class={styles.tag}>{t}</span>)}
       </div>
@@ -45,13 +55,6 @@ const stack = [
 
     <!-- Right column -->
     <div class={styles.hero__right}>
-      <Image
-        src={photo}
-        alt="Dmytro Tuzov — Frontend Engineer"
-        class={styles.hero__photo}
-        loading="eager"
-        fetchpriority="high"
-      />
       <!-- Terminal card -->
       <div class={styles.terminal} aria-label="Terminal output">
         <div class={styles.terminal__bar}>

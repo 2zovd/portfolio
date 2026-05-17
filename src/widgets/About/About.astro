@@ -63,12 +63,14 @@ const experience = [
 
       <!-- Left: bio + skills -->
       <div class={styles.left}>
-        <Image
-          src={photo}
-          alt="Dmytro Tuzov — Frontend Engineer"
-          class={styles.about__photo}
-          loading="lazy"
-        />
+        <div class={styles.about__photo_wrap}>
+          <Image
+            src={photo}
+            alt="Dmytro Tuzov — Frontend Engineer"
+            class={styles.about__photo}
+            loading="lazy"
+          />
+        </div>
         <div class={styles.bio}>
           <p class={styles.bio__text}>
             I'm a Frontend Engineer based in {SITE.location}, specialising in Vue 3,

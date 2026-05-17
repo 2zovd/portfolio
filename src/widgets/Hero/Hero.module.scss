@@ -39,11 +39,56 @@
 
 // ─── Profile photo ───────────────────────────────────────────────────────────
 
+.hero__photo_wrap {
+  position: relative;
+  display: block;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.08) 0px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity var(--transition-slow) var(--ease-out-expo);
+  }
+
+  &:hover::after {
+    opacity: 0;
+  }
+
+  &:hover .hero__photo {
+    filter: none;
+  }
+}
+
 .hero__photo {
-  width: 100%;
-  height: auto;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  object-position: top center;
   display: block;
   border: 1px solid var(--color-border);
+  filter: grayscale(100%) contrast(1.05);
+  transition: filter var(--transition-slow) var(--ease-out-expo);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__photo_wrap::after {
+    transition: none;
+  }
 }
 
 // ─── Tags ────────────────────────────────────────────────────────────────────
