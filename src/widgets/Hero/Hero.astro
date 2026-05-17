@@ -1,6 +1,7 @@
 ---
 import { SITE } from '@shared/config/site';
 import { TimeDisplay } from '@features/TimeDisplay';
+import { HeroCanvas } from '@features/HeroCanvas';
 import styles from './Hero.module.scss';
 
 const tags = ['Vue 3', 'TypeScript', 'Astro', 'Fintech'];
@@ -11,6 +12,7 @@ const stack = [
 ---
 
 <section class={styles.hero} aria-labelledby="hero-heading">
+  <HeroCanvas client:load />
   <div class={styles.hero__grid}>
 
     <!-- Left column -->

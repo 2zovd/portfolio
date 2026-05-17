@@ -49,6 +49,10 @@
 
   // --- Status ---
   --color-status-available: #22c55e;
+
+  // --- Canvas animation ---
+  --canvas-particle: rgba(200, 240, 0, 0.45);
+  --canvas-line:     rgba(255, 255, 255, 0.07);
 }
 
 // Light theme override — applied via class="light" on <html>
@@ -64,6 +68,9 @@
   --color-subtle:       #999999;
   --color-accent:       #5a7a00;
   --color-accent-hover: #4a6600;
+
+  --canvas-particle: rgba(90, 122, 0, 0.35);
+  --canvas-line:     rgba(0, 0, 0, 0.06);
 }
 
 // Background grid mixin — applied on .site wrapper
