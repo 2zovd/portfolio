@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import { SITE } from '@shared/config/site';
 import { TimeDisplay } from '@features/TimeDisplay';
 import { HeroCanvas } from '@features/HeroCanvas';
+import photo from '../../assets/photo.jpeg';
 import styles from './Hero.module.scss';
 
 const tags = ['Vue 3', 'TypeScript', 'Astro', 'Fintech'];
@@ -43,6 +45,13 @@ const stack = [
 
     <!-- Right column -->
     <div class={styles.hero__right}>
+      <Image
+        src={photo}
+        alt="Dmytro Tuzov — Frontend Engineer"
+        class={styles.hero__photo}
+        loading="eager"
+        fetchpriority="high"
+      />
       <!-- Terminal card -->
       <div class={styles.terminal} aria-label="Terminal output">
         <div class={styles.terminal__bar}>

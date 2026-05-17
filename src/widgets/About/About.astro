@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import { SITE } from '@shared/config/site';
 import SectionHeading from '@shared/ui/SectionHeading.astro';
 import Tag from '@shared/ui/Tag.astro';
+import photo from '../../assets/photo.jpeg';
 import styles from './About.module.scss';
 
 const skills = [
@@ -61,6 +63,12 @@ const experience = [
 
       <!-- Left: bio + skills -->
       <div class={styles.left}>
+        <Image
+          src={photo}
+          alt="Dmytro Tuzov — Frontend Engineer"
+          class={styles.about__photo}
+          loading="lazy"
+        />
         <div class={styles.bio}>
           <p class={styles.bio__text}>
             I'm a Frontend Engineer based in {SITE.location}, specialising in Vue 3,
