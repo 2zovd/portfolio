@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, type MockInstance } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import ContactForm from './ContactForm.vue';
 
@@ -165,7 +165,7 @@ describe('ContactForm', () => {
     fetchMock.mockResolvedValue(
       new Response(JSON.stringify({ success: false, message: 'Error' }), { status: 400 }),
     );
-    const resetMock = window.turnstile!.reset as MockInstance;
+    const resetMock = vi.mocked(window.turnstile!.reset);
 
     const wrapper = mount(ContactForm);
     simulateTurnstileSuccess();

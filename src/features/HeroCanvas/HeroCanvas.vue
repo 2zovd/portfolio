@@ -47,9 +47,11 @@ function initParticles(): void {
 }
 
 function resize(): void {
-  if (!canvas || !canvas.parentElement) return;
-  w = canvas.parentElement.offsetWidth;
-  h = canvas.parentElement.offsetHeight;
+  if (!canvas) return;
+  const section = canvas.closest<HTMLElement>('section');
+  if (!section) return;
+  w = section.offsetWidth;
+  h = section.offsetHeight;
   canvas.width = w;
   canvas.height = h;
   initParticles();
@@ -156,7 +158,8 @@ onMounted(() => {
   };
 
   const resizeObserver = new ResizeObserver(resize);
-  if (canvas.parentElement) resizeObserver.observe(canvas.parentElement);
+  const section = canvas.closest('section');
+  if (section) resizeObserver.observe(section);
 
   const mutationObserver = new MutationObserver(readColors);
   mutationObserver.observe(document.documentElement, {
