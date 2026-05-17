@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import SectionHeading from '@shared/ui/SectionHeading.astro';
+import ProjectCard from '@shared/ui/ProjectCard.astro';
+import styles from './Portfolio.module.scss';
+
+const allProjects = await getCollection('portfolio');
+const projects = allProjects.sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+const featured = projects.filter((p) => p.data.featured);
+const rest = projects.filter((p) => !p.data.featured);
+---
+
+<section class={styles.portfolio} aria-labelledby="portfolio-heading">
+  <div class={styles.container}>
+    <SectionHeading
+      id="portfolio-heading"
+      title="Work"
+      subtitle="Selected projects and case studies."
+    />
+
+    {projects.length === 0 ? (
+      <p class={styles.empty}>No projects yet.</p>
+    ) : (
+      <div class={styles.grid}>
+        {featured.map((project) => (
+          <ProjectCard
+            slug={project.id}
+            title={project.data.title}
+            description={project.data.description}
+            tags={project.data.tags}
+            featured={project.data.featured}
+            links={project.data.links}
+            cover={project.data.cover}
+          />
+        ))}
+        {rest.map((project) => (
+          <ProjectCard
+            slug={project.id}
+            title={project.data.title}
+            description={project.data.description}
+            tags={project.data.tags}
+            featured={project.data.featured}
+            links={project.data.links}
+            cover={project.data.cover}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+</section>
