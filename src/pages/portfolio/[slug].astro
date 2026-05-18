@@ -17,7 +17,17 @@ const { project } = Astro.props;
 const { Content } = await render(project);
 const { title, description, date, tags, links } = project.data;
 
-const ogImage = project.data.cover ?? '/og.png';
+const ogImage = project.data.cover ?? `/og/project/${project.id}.png`;
+
+const pageSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  description: description,
+  datePublished: formatISO(date),
+  author: { '@type': 'Person', name: SITE.name, url: SITE.url },
+  url: new URL(`/portfolio/${project.id}`, SITE.url).href,
+};
 
 const actionLinks = [
   links.live ? { href: links.live, label: 'Live site', external: true } : null,
@@ -30,6 +40,7 @@ const actionLinks = [
   title={`${title} · ${SITE.name}`}
   description={description}
   ogImage={ogImage}
+  pageSchema={pageSchema}
 >
   <article class="project-layout">
     <a href="/portfolio" class="project-layout__back">← Work</a>

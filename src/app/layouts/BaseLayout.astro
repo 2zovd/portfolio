@@ -9,6 +9,7 @@ interface Props {
   ogImage?: string;
   canonical?: string;
   schema?: boolean;
+  pageSchema?: Record<string, unknown>;
 }
 
 const {
@@ -17,6 +18,7 @@ const {
   ogImage = '/og.png',
   canonical,
   schema = false,
+  pageSchema,
 } = Astro.props;
 
 const canonicalURL = canonical ?? new URL(Astro.url.pathname, SITE.url).href;
@@ -28,7 +30,6 @@ const personSchema = {
   name: SITE.name,
   url: SITE.url,
   jobTitle: SITE.role,
-  email: SITE.email,
   address: { '@type': 'PostalAddress', addressCountry: 'ME' },
   sameAs: SITE.socials.map((s) => s.href),
 };
@@ -98,6 +99,11 @@ const personSchema = {
     {/* JSON-LD Person schema — homepage only */}
     {schema && (
       <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+    )}
+
+    {/* JSON-LD page-specific schema — blog posts, projects */}
+    {pageSchema && (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(pageSchema).replace(/</g, '\\u003c')} />
     )}
 
     <ClientRouter />

@@ -18,14 +18,27 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 const { title, description, pubDate, tags } = post.data;
 
-const ogImage = post.data.cover ?? '/og.png';
+const ogImage = post.data.cover ?? `/og/blog/${post.id}.png`;
 const postReadingTime = post.body ? readingTime(post.body) : undefined;
+
+const pageSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description: description,
+  datePublished: formatISO(pubDate),
+  author: { '@type': 'Person', name: SITE.name, url: SITE.url },
+  publisher: { '@type': 'Person', name: SITE.name, url: SITE.url },
+  url: new URL(`/blog/${post.id}`, SITE.url).href,
+  image: new URL(ogImage, SITE.url).href,
+};
 ---
 
 <PageLayout
   title={`${title} · ${SITE.name}`}
   description={description}
   ogImage={ogImage}
+  pageSchema={pageSchema}
 >
   <article class="post-layout">
     <a href="/blog" class="post-layout__back">← Blog</a>
