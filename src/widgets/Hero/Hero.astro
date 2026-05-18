@@ -6,7 +6,7 @@ import { HeroCanvas } from '@features/HeroCanvas';
 import photo from '../../assets/photo.png';
 import styles from './Hero.module.scss';
 
-const tags = ['Vue 3', 'TypeScript', 'Astro', 'Fintech'];
+const tags = ['Vue 3', 'TypeScript', 'Fintech', 'Microfrontends'];
 const stack = [
   'JavaScript', 'TypeScript', 'Vue 3', 'Pinia', 'Vuex', 'Astro',
   'Backbone.js', 'Vite', 'Webpack', 'SCSS', 'Vitest', 'Cordova',
@@ -38,9 +38,9 @@ const stack = [
       </h1>
 
       <p class={styles.description}>
-        Frontend Engineer with 7+ years building high-performance web applications for
-        platforms serving millions of users. Focused on Vue 3, TypeScript, and scalable
-        micro-frontend architecture.
+        Frontend Engineer specialising in hybrid legacy/modern architectures for fintech
+        trading platforms. 7+ years shipping production features in Vue 3, TypeScript, and
+        Backbone.js stacks — serving 3M+ users across 120+ countries.
       </p>
 
       <div class={styles.cta}>
@@ -70,7 +70,7 @@ const stack = [
 <span class={styles.terminal__value}>{SITE.location}</span>
 
 <span class={styles.terminal__prompt}>$</span> experience
-<span class={styles.terminal__value}>7+ years fintech</span>
+<span class={styles.terminal__value}>7+ years · fintech</span>
 
 <span class={styles.terminal__prompt}>$</span> stack
 <span class={styles.terminal__value}>Vue 3 · TypeScript · Astro</span>
@@ -82,14 +82,10 @@ const stack = [
       <div class={styles.contact}>
         <div class={styles.contact__status}>
           <span class={styles.contact__dot} aria-hidden="true" />
-          <span>Available for work</span>
+          <span>Open to select projects</span>
         </div>
-        <a
-          href={`mailto:${SITE.email}`}
-          class={styles.contact__email}
-          aria-label={`Email ${SITE.name}`}
-        >
-          {SITE.email}
+        <a href="/contact" class={styles.contact__email}>
+          Get in touch
         </a>
         <TimeDisplay client:load />
       </div>

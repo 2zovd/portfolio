@@ -86,73 +86,75 @@ onUnmounted(() => {
       </span>
     </button>
 
-    <Transition name="overlay">
-      <div
-        v-if="isOpen"
-        id="mobile-nav-overlay"
-        ref="overlayRef"
-        class="mobile-nav__overlay"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Navigation"
-      >
-        <button
-          class="mobile-nav__close"
-          aria-label="Close navigation"
-          @click="close"
+    <Teleport to="body">
+      <Transition name="overlay">
+        <div
+          v-if="isOpen"
+          id="mobile-nav-overlay"
+          ref="overlayRef"
+          class="mobile-nav__overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
+          <button
+            class="mobile-nav__close"
+            aria-label="Close navigation"
+            @click="close"
           >
-            <line
-              x1="18"
-              y1="6"
-              x2="6"
-              y2="18"
-            />
-            <line
-              x1="6"
-              y1="6"
-              x2="18"
-              y2="18"
-            />
-          </svg>
-        </button>
-
-        <nav aria-label="Mobile navigation">
-          <ul
-            class="mobile-nav__list"
-            role="list"
-          >
-            <li
-              v-for="item in SITE.nav"
-              :key="item.href"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
             >
-              <a
-                :href="item.href"
-                :class="[
-                  'mobile-nav__link',
-                  { 'mobile-nav__link--active': item.href === currentPath },
-                ]"
-                :aria-current="item.href === currentPath ? 'page' : undefined"
-                @click="close"
+              <line
+                x1="18"
+                y1="6"
+                x2="6"
+                y2="18"
+              />
+              <line
+                x1="6"
+                y1="6"
+                x2="18"
+                y2="18"
+              />
+            </svg>
+          </button>
+
+          <nav aria-label="Mobile navigation">
+            <ul
+              class="mobile-nav__list"
+              role="list"
+            >
+              <li
+                v-for="item in SITE.nav"
+                :key="item.href"
               >
-                {{ item.label }}
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </Transition>
+                <a
+                  :href="item.href"
+                  :class="[
+                    'mobile-nav__link',
+                    { 'mobile-nav__link--active': item.href === currentPath },
+                  ]"
+                  :aria-current="item.href === currentPath ? 'page' : undefined"
+                  @click="close"
+                >
+                  {{ item.label }}
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </Transition>
+    </teleport>
   </div>
 </template>
 

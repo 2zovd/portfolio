@@ -28,11 +28,11 @@ export const SITE: SiteConfig = {
   description:
     'Frontend Engineer with 7+ years building high-performance web applications. Specialising in Vue 3, TypeScript, and scalable architecture.',
   location: 'Montenegro · Remote',
-  available: true,
+  available: false,
   email: 'dmy2zov@gmail.com',
   socials: [
     { label: 'GitHub', href: 'https://github.com/2zovd', icon: 'github' },
-    { label: 'LinkedIn', href: 'https://linkedin.com/in/dmytrotuzov', icon: 'linkedin' },
+    { label: 'LinkedIn', href: 'https://linkedin.com/in/dmitrytuzov', icon: 'linkedin' },
   ],
   nav: [
     { label: 'Work', href: '/portfolio' },

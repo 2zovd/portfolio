@@ -8,44 +8,54 @@ import styles from './About.module.scss';
 
 const skills = [
   {
-    category: 'Languages',
-    items: ['JavaScript', 'TypeScript', 'HTML', 'CSS / SCSS'],
+    category: 'Core',
+    items: ['JavaScript', 'TypeScript', 'Vue 3', 'Pinia', 'Vuex'],
   },
   {
-    category: 'Frameworks',
-    items: ['Vue 3', 'Pinia', 'Vuex', 'Astro', 'Backbone.js'],
+    category: 'Architecture',
+    items: ['Microfrontends', 'Backbone.js', 'Vite UMD', 'Event Bus'],
   },
   {
-    category: 'Tools',
-    items: ['Vite', 'Webpack', 'Vitest', 'ESLint', 'Git'],
+    category: 'Tooling',
+    items: ['Vite', 'Webpack', 'Vitest', 'GitLab CI/CD'],
   },
   {
-    category: 'Platforms',
-    items: ['Cloudflare Pages', 'Cordova', 'Node.js', 'Docker'],
+    category: 'Platform',
+    items: ['Cordova', 'REST APIs', 'i18n', 'Figma'],
   },
 ];
 
 const experience = [
   {
     company: 'Libertex Group',
-    role: 'Senior Frontend Engineer',
-    period: '2017 — Present',
+    role: 'Frontend Engineer',
+    period: 'Oct 2018 — Present',
     location: 'Remote · Cyprus',
     highlights: [
-      'Led migration from Backbone.js to Vue 3 micro-frontend architecture across a 3M+ user fintech platform',
-      'Architected shared component library consumed by 6 product teams',
-      'Reduced initial bundle size by 40% through code-splitting and lazy loading',
-      'Mentored 4 junior engineers, conducted 200+ code reviews',
+      'Architected Vue 3 / TypeScript / Pinia microfrontend delivering AI-generated trading signals to 3M+ platform users',
+      'Delivered a Vue 3 / Vuex 4 microfrontend targeting web, iOS, and Android via Cordova',
+      'Integrated microfrontends with legacy Backbone.js / Marionette host via EventBus (JWT lifecycle, real-time data)',
+      'Drove JS→TS and Vuex→Pinia modernization across the Vue 3 stack; led code reviews in an 8-person cross-functional team',
     ],
   },
   {
-    company: 'Freelance',
-    role: 'Frontend Developer',
-    period: '2015 — 2017',
+    company: 'Mobilsoft',
+    role: 'UI Developer',
+    period: 'Feb 2017 — Mar 2018',
     location: 'Remote',
     highlights: [
-      'Built SPAs and landing pages for clients across e-commerce and media',
-      'Stack: vanilla JavaScript, jQuery, SCSS, WordPress',
+      'Built responsive, accessible UIs for an iGaming platform with optimised animation and cross-device compatibility',
+      'Enhanced Laravel-based applications on the frontend side',
+    ],
+  },
+  {
+    company: 'Contract & Freelance',
+    role: 'Frontend Developer',
+    period: 'Dec 2015 — Jun 2018',
+    location: 'Remote',
+    highlights: [
+      'Built complete frontend for a social platform (desktop + mobile web) from scratch — remains in production today',
+      'Delivered responsive sites and a learning platform for international clients via Upwork',
     ],
   },
 ];
@@ -56,7 +66,7 @@ const experience = [
     <SectionHeading
       id="about-heading"
       title="About"
-      subtitle={`Frontend Engineer with ${7}+ years shipping production-grade interfaces.`}
+      subtitle="Frontend Engineer with 7+ years shipping production-grade interfaces."
     />
 
     <div class={styles.grid}>
@@ -73,15 +83,16 @@ const experience = [
         </div>
         <div class={styles.bio}>
           <p class={styles.bio__text}>
-            I'm a Frontend Engineer based in {SITE.location}, specialising in Vue 3,
-            TypeScript, and large-scale micro-frontend architectures. For the past 7+ years
-            I've been building trading platforms at Libertex Group — products used by
-            millions of traders worldwide.
+            Frontend Engineer based in {SITE.location}, specialising in hybrid legacy/modern
+            architectures for fintech trading platforms. For 7+ years I've been shipping
+            production features at Libertex Group — products used by 3M+ traders across
+            120+ countries.
           </p>
           <p class={styles.bio__text}>
-            I care about code that scales: clean component boundaries, strict typing, and
-            automated quality gates. Outside of product work I contribute to open-source,
-            write technical articles, and speak at local meetups.
+            I work across Backbone.js / Marionette legacy stacks and Vue 3 microfrontend
+            architectures within the same production system. I care about clean component
+            boundaries, strict typing, and hands-on modernization — and I use AI tooling
+            (Claude Code, GitHub Copilot) as part of my daily workflow.
           </p>
         </div>
 

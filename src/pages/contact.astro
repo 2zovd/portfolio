@@ -6,7 +6,7 @@ import { SITE } from '@shared/config/site';
 
 <PageLayout
   title={`Contact · ${SITE.name}`}
-  description="Get in touch with Dmytro Tuzov — Frontend Engineer available for new opportunities."
+  description="Get in touch with Dmytro Tuzov — Frontend Engineer. Fill out the form to start a conversation."
 >
   <section class="contact" aria-labelledby="contact-heading">
     <div class="contact__grid">
@@ -18,17 +18,9 @@ import { SITE } from '@shared/config/site';
           Let's work together.
         </h1>
         <p class="contact__text">
-          I'm currently available for new opportunities — full-time, contract, or consulting.
-          Fill out the form or reach out directly.
+          Have a project in mind or want to discuss opportunities? Fill out the form and I'll
+          get back to you.
         </p>
-
-        <a
-          href={`mailto:${SITE.email}`}
-          class="contact__email"
-          aria-label={`Send email to ${SITE.name}`}
-        >
-          {SITE.email}
-        </a>
 
         <div class="contact__socials">
           {SITE.socials.map((social) => (
@@ -109,22 +101,6 @@ import { SITE } from '@shared/config/site';
     max-width: 48ch;
   }
 
-  .contact__email {
-    display: inline-block;
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    color: var(--color-text);
-    text-decoration: none;
-    border-bottom: 1px solid var(--color-accent);
-    padding-bottom: 2px;
-    transition: color var(--transition-fast), border-color var(--transition-fast);
-
-    &:hover {
-      color: var(--color-accent);
-    }
-  }
-
   .contact__socials {
     display: flex;
     gap: var(--space-4);
@@ -152,7 +128,6 @@ import { SITE } from '@shared/config/site';
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .contact__email,
     .contact__social-link {
       transition: none;
     }
