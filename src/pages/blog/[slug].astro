@@ -5,6 +5,8 @@ import Tag from '@shared/ui/Tag.astro';
 import { formatMonthYear, formatISO } from '@shared/lib/formatDate';
 import { readingTime } from '@shared/lib/readingTime';
 import { SITE } from '@shared/config/site';
+import { CodeCopy } from '@features/CodeCopy';
+import { ReadingProgress } from '@features/ReadingProgress';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -40,7 +42,9 @@ const pageSchema: Record<string, unknown> = {
   ogImage={ogImage}
   pageSchema={pageSchema}
 >
+  <ReadingProgress client:load />
   <article class="post-layout">
+    <CodeCopy client:load />
     <a href="/blog" class="post-layout__back">← Blog</a>
 
     <header class="post-layout__header">

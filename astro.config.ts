@@ -4,6 +4,16 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://dmytrotuzov.dev',
+  markdown: {
+    shikiConfig: {
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark-dimmed',
+      },
+      defaultColor: 'dark',
+      wrap: false,
+    },
+  },
   integrations: [vue(), sitemap()],
   vite: {
     resolve: {
