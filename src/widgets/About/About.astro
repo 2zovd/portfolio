@@ -9,19 +9,27 @@ import styles from './About.module.scss';
 const skills = [
   {
     category: 'Core',
-    items: ['JavaScript', 'TypeScript', 'Vue 3', 'Pinia', 'Vuex'],
+    items: ['JavaScript (ES6+)', 'TypeScript', 'Vue 3', 'Pinia', 'Vuex', 'Vue Router'],
   },
   {
     category: 'Architecture',
-    items: ['Microfrontends', 'Backbone.js', 'Vite UMD', 'Event Bus'],
+    items: ['Microfrontends (UMD)', 'Backbone.js / Marionette', 'Backbone.Radio EventBus'],
+  },
+  {
+    category: 'UI & Styling',
+    items: ['SCSS Modules', 'Tailwind CSS', 'HTML5', 'CSS3'],
   },
   {
     category: 'Tooling',
-    items: ['Vite', 'Webpack', 'Vitest', 'GitLab CI/CD'],
+    items: ['Vite', 'Webpack', 'Git', 'GitLab CI/CD'],
   },
   {
-    category: 'Platform',
-    items: ['Cordova', 'REST APIs', 'i18n', 'Figma'],
+    category: 'Testing',
+    items: ['Vitest', 'Jest'],
+  },
+  {
+    category: 'AI & Automation',
+    items: ['Claude Code', 'GitHub Copilot'],
   },
 ];
 
@@ -32,10 +40,11 @@ const experience = [
     period: 'Oct 2018 — Present',
     location: 'Remote · Cyprus',
     highlights: [
-      'Architected Vue 3 / TypeScript / Pinia microfrontend delivering AI-generated trading signals to 3M+ platform users',
-      'Delivered a Vue 3 / Vuex 4 microfrontend targeting web, iOS, and Android via Cordova',
-      'Integrated microfrontends with legacy Backbone.js / Marionette host via EventBus (JWT lifecycle, real-time data)',
-      'Drove JS→TS and Vuex→Pinia modernization across the Vue 3 stack; led code reviews in an 8-person cross-functional team',
+      'Shipped features across a hybrid trading terminal built on Backbone.js / Marionette (250k+ lines, ~10-year legacy codebase), working across ES5/AMD modules and TypeScript strict-mode code within the same production system.',
+      'Architected a Vue 3 / TypeScript / Pinia microfrontend delivering AI-generated trading signals to 3M+ platform users — Pinia stores, Axios with JWT interceptors, SCSS Modules, Vite UMD bundle, Crowdin i18n.',
+      'Delivered a Vue 3 / Vuex 4 microfrontend in JavaScript with Tailwind CSS and a broker-aware service layer, targeting 3 platforms (desktop web, iOS, Android); integrated both microfrontends with the host via Backbone.Radio EventBus.',
+      'Drove ongoing modernization of the frontend stack (JavaScript → TypeScript, Vuex → Pinia) and integrated AI tooling (Claude Code, GitHub Copilot) as part of daily workflow.',
+      'Led code reviews and onboarding within an 8-person cross-functional team (2 FE, 3 BE, QA, PO) in an Agile environment.',
     ],
   },
   {
@@ -44,18 +53,26 @@ const experience = [
     period: 'Feb 2017 — Mar 2018',
     location: 'Remote',
     highlights: [
-      'Built responsive, accessible UIs for an iGaming platform with optimised animation and cross-device compatibility',
-      'Enhanced Laravel-based applications on the frontend side',
+      'Built responsive, accessible UIs for an iGaming platform, including interactive game interfaces with optimised animation performance and cross-device compatibility.',
+      'Enhanced Laravel-based applications on the frontend side.',
     ],
   },
   {
-    company: 'Contract & Freelance',
+    company: 'Contract Frontend Developer',
     role: 'Frontend Developer',
-    period: 'Dec 2015 — Jun 2018',
+    period: 'Jul 2016 — Jun 2018',
     location: 'Remote',
     highlights: [
-      'Built complete frontend for a social platform (desktop + mobile web) from scratch — remains in production today',
-      'Delivered responsive sites and a learning platform for international clients via Upwork',
+      'Delivered frontend projects for international clients via direct contracts and Upwork: responsive landing pages, business websites, and a learning platform.',
+    ],
+  },
+  {
+    company: 'Social Platform [NDA]',
+    role: 'UI Developer',
+    period: 'Dec 2015 — Jun 2016',
+    location: 'Remote',
+    highlights: [
+      'Built the complete frontend for a social platform from scratch (desktop and mobile web) — semantic HTML, responsive layouts, cross-browser compatibility. The platform remains in production to this day.',
     ],
   },
 ];
