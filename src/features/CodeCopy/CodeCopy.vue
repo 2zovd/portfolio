@@ -38,4 +38,4 @@ onUnmounted(() => {
 });
 </script>
 
-<template></template>
+<template><!-- renderless component --></template>
