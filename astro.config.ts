@@ -1,8 +1,10 @@
 import { defineConfig } from 'astro/config';
 import vue from '@astrojs/vue';
 import sitemap from '@astrojs/sitemap';
+import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
+  adapter: cloudflare(),
   site: 'https://dmytrotuzov.dev',
   markdown: {
     shikiConfig: {
