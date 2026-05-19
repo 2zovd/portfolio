@@ -2,8 +2,11 @@ import { defineConfig } from 'astro/config';
 import vue from '@astrojs/vue';
 import sitemap from '@astrojs/sitemap';
 
+import cloudflare from '@astrojs/cloudflare';
+
 export default defineConfig({
   site: 'https://dmytrotuzov.dev',
+
   markdown: {
     shikiConfig: {
       themes: {
@@ -14,7 +17,9 @@ export default defineConfig({
       wrap: false,
     },
   },
+
   integrations: [vue(), sitemap()],
+
   vite: {
     resolve: {
       alias: {
@@ -26,4 +31,6 @@ export default defineConfig({
       },
     },
   },
+
+  adapter: cloudflare(),
 });
