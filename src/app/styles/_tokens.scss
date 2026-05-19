@@ -12,8 +12,11 @@
   --color-text:         #e8e8e0;
   --color-muted:        #888888;
   --color-subtle:       #555555;
-  --color-accent:       #c8f000;
-  --color-accent-hover: #d4ff00;
+  --color-accent:            #c8f000;
+  --color-accent-hover:      #d4ff00;
+  --color-btn-primary:       var(--color-accent);
+  --color-btn-primary-hover: var(--color-accent-hover);
+  --color-btn-primary-fg:    #000;
 
   // --- Spacing scale (8px base) ---
   --space-1:  4px;
@@ -66,8 +69,11 @@
   --color-text:         #0c0c0a;
   --color-muted:        #666666;
   --color-subtle:       #999999;
-  --color-accent:       #5a7a00;
-  --color-accent-hover: #4a6600;
+  --color-accent:            #5a7a00;
+  --color-accent-hover:      #4a6600;
+  --color-btn-primary:       var(--color-text);
+  --color-btn-primary-hover: #333333;
+  --color-btn-primary-fg:    var(--color-bg);
 
   --canvas-particle: rgba(90, 122, 0, 0.35);
   --canvas-line:     rgba(0, 0, 0, 0.06);
