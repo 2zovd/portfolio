@@ -1,4 +1,7 @@
-@use '../../app/styles/tokens' as *;
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
 
 // ─── Hero section ────────────────────────────────────────────────────────────
 
@@ -66,7 +69,7 @@
   }
 
   &:hover .hero__photo {
-    filter: none;
+    filter: grayscale(0) contrast(1);
   }
 }
 
@@ -77,10 +80,11 @@
   object-position: top center;
   display: block;
   border: 1px solid var(--color-border);
-  filter: grayscale(100%) contrast(1.05);
+  filter: grayscale(1) contrast(1.05);
   transition: filter var(--transition-slow) var(--ease-out-expo);
 
   @media (prefers-reduced-motion: reduce) {
+    filter: grayscale(100%) contrast(1.05);
     transition: none;
   }
 }
@@ -88,6 +92,10 @@
 @media (prefers-reduced-motion: reduce) {
   .hero__photo_wrap::after {
     transition: none;
+  }
+
+  .hero__photo_wrap:hover .hero__photo {
+    filter: none;
   }
 }
 
@@ -154,13 +162,13 @@
 }
 
 .btn--primary {
-  background-color: var(--color-accent);
-  color: #000;
-  border: 1px solid var(--color-accent);
+  background-color: var(--color-btn-primary);
+  color: var(--color-btn-primary-fg);
+  border: 1px solid var(--color-btn-primary);
 
   &:hover {
-    background-color: var(--color-accent-hover);
-    border-color: var(--color-accent-hover);
+    background-color: var(--color-btn-primary-hover);
+    border-color: var(--color-btn-primary-hover);
   }
 }
 
@@ -250,36 +258,17 @@
   background-color: var(--color-surface);
 }
 
-.contact__status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-status-available);
-}
-
-.contact__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-status-available);
-  animation: pulse 2s ease-in-out infinite;
-  flex-shrink: 0;
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-}
-
 .contact__email {
   font-size: 14px;
-  color: var(--color-muted);
+  color: var(--color-text);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 1px;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
 
   &:hover {
     color: var(--color-accent);
+    border-color: var(--color-accent);
   }
 }
 

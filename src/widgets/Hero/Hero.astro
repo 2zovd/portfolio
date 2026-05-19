@@ -19,7 +19,7 @@ const stack = [
 
     <!-- Left column -->
     <div class={styles.hero__left}>
-      <div class={styles.hero__photo_wrap}>
+      <div class={styles.hero__photo_wrap} data-hero-photo-wrap>
         <Image
           src={photo}
           alt="Dmytro Tuzov — Frontend Engineer"
@@ -80,18 +80,159 @@ const stack = [
 
       <!-- Contact / availability card -->
       <div class={styles.contact}>
-        <div class={styles.contact__status}>
-          <span class={styles.contact__dot} aria-hidden="true" />
-          <span>Let's connect</span>
-        </div>
+        <TimeDisplay client:load />
         <a href="/contact" class={styles.contact__email}>
           Get in touch
         </a>
-        <TimeDisplay client:load />
       </div>
     </div>
   </div>
 </section>
+
+<script>
+  (function () {
+    const wrap = document.querySelector('[data-hero-photo-wrap]');
+    if (!wrap || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const img = wrap.querySelector<HTMLImageElement>('img');
+    if (!img) return;
+    const imgEl: HTMLImageElement = img;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 120;
+    canvas.height = 120;
+    Object.assign(canvas.style, {
+      position: 'absolute', top: '0', left: '0',
+      width: '120px', height: '120px',
+      pointerEvents: 'none', opacity: '0',
+    });
+    wrap.appendChild(canvas);
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const renderCtx: CanvasRenderingContext2D = ctx;
+
+    function makeOffscreen(filter: string): HTMLCanvasElement | null {
+      const c = document.createElement('canvas');
+      c.width = 120; c.height = 120;
+      const cx = c.getContext('2d');
+      if (!cx) return null;
+      cx.filter = filter;
+      cx.drawImage(imgEl, 0, 0, 120, 120);
+      return c;
+    }
+
+    const grayCanvas = makeOffscreen('grayscale(1) contrast(1.05)');
+    const colorCanvas = makeOffscreen('contrast(1.05)');
+    if (!grayCanvas || !colorCanvas) return;
+    const gc: HTMLCanvasElement = grayCanvas;
+    const cc: HTMLCanvasElement = colorCanvas;
+
+    interface Band { start: number; end: number; isNoise: boolean; }
+
+    function makeDisplacements(): { d: Int16Array; bands: Band[] } {
+      const raw = new Float32Array(120);
+      const bands: Band[] = [];
+
+      // 2–4 horizontal interference bands with random large displacement
+      const numBands = 2 + Math.floor(Math.random() * 3);
+      for (let b = 0; b < numBands; b++) {
+        const start = Math.floor(Math.random() * 108);
+        const h = 4 + Math.floor(Math.random() * 16);
+        const end = Math.min(start + h, 120);
+        const sign = Math.random() < 0.5 ? 1 : -1;
+        const dx = sign * (8 + Math.random() * 20);
+        bands.push({ start, end, isNoise: Math.random() < 0.35 });
+        for (let y = start; y < end; y++) raw[y] = dx;
+      }
+
+      // Sparse micro-jitter on non-band rows
+      for (let y = 0; y < 120; y++) {
+        if (raw[y]! === 0 && Math.random() < 0.05) raw[y] = (Math.random() - 0.5) * 6;
+      }
+
+      // Normalize to zero sum — guarantees no net image shift
+      let sum = 0;
+      for (let y = 0; y < 120; y++) sum += raw[y]!;
+      const mean = sum / 120;
+      const d = new Int16Array(120);
+      for (let y = 0; y < 120; y++) d[y] = Math.round(raw[y]! - mean);
+
+      return { d, bands };
+    }
+
+    function drawFrame(colored: boolean) {
+      const src = colored ? cc : gc;
+      const { d, bands } = makeDisplacements();
+      const bg = getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-bg').trim() || '#0c0c0a';
+
+      renderCtx.filter = 'none';
+      renderCtx.fillStyle = bg;
+      renderCtx.fillRect(0, 0, 120, 120);
+
+      for (let y = 0; y < 120; y++) {
+        renderCtx.drawImage(src, 0, y, 120, 1, d[y]!, y, 120, 1);
+      }
+
+      // Semi-transparent white noise bars on marked bands
+      for (const band of bands) {
+        if (band.isNoise) {
+          renderCtx.fillStyle = `rgba(255,255,255,${0.12 + Math.random() * 0.22})`;
+          renderCtx.fillRect(0, band.start, 120, band.end - band.start);
+        }
+      }
+    }
+
+    let hovered = false;
+    let hoverTimerId: ReturnType<typeof setInterval> | null = null;
+
+    function runBurst() {
+      let i = 0;
+      canvas.style.opacity = '1';
+      imgEl.style.opacity = '0';
+      drawFrame(false);
+      const id = setInterval(() => {
+        drawFrame(false);
+        if (++i >= 6) {
+          clearInterval(id);
+          if (!hovered) {
+            canvas.style.opacity = '0';
+            imgEl.style.opacity = '1';
+          }
+        }
+      }, 50);
+    }
+
+    function scheduleNext() {
+      setTimeout(() => {
+        if (!hovered) runBurst();
+        scheduleNext();
+      }, 1000 + Math.random() * 4000);
+    }
+
+    wrap.addEventListener('mouseenter', () => {
+      hovered = true;
+      canvas.style.opacity = '1';
+      imgEl.style.opacity = '0';
+      drawFrame(true);
+      hoverTimerId = setInterval(() => drawFrame(true), 80);
+    });
+
+    wrap.addEventListener('mouseleave', () => {
+      hovered = false;
+      if (hoverTimerId !== null) { clearInterval(hoverTimerId); hoverTimerId = null; }
+      canvas.style.opacity = '0';
+      imgEl.style.opacity = '1';
+    });
+
+    if (imgEl.complete) {
+      scheduleNext();
+    } else {
+      imgEl.addEventListener('load', scheduleNext, { once: true });
+    }
+  }());
+</script>
 
 <!-- Stack bar -->
 <div class={styles.stack} aria-label="Technology stack">
