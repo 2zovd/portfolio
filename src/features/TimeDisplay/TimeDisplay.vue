@@ -8,6 +8,15 @@ const visitorTime = ref('');
 const diffLabel = ref('');
 const mounted = ref(false);
 
+function isWorkingHour(now: Date): boolean {
+  const local = new Date(now.toLocaleString('en-US', { timeZone: DMYTRO_TZ }));
+  const day = local.getDay();
+  const hour = local.getHours();
+  return day >= 1 && day <= 5 && hour >= 9 && hour < 18;
+}
+
+const isOnline = ref(isWorkingHour(new Date()));
+
 let timer: ReturnType<typeof setInterval> | undefined;
 
 function formatHHMM(date: Date, tz: string): string {
@@ -28,6 +37,7 @@ function getOffsetHours(date: Date, tz: string): number {
 function tick(): void {
   const now = new Date();
   dmytroTime.value = formatHHMM(now, DMYTRO_TZ);
+  isOnline.value = isWorkingHour(now);
 
   try {
     const visitorTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -66,6 +76,17 @@ onUnmounted(() => {
     aria-live="off"
     aria-atomic="true"
   >
+    <span
+      class="time-display__status"
+      :class="isOnline ? 'time-display__status--online' : 'time-display__status--offline'"
+    >
+      <span
+        class="time-display__dot"
+        :class="isOnline ? 'time-display__dot--online' : 'time-display__dot--offline'"
+        aria-hidden="true"
+      />
+      <span>{{ isOnline ? 'Online' : 'Offline' }}</span>
+    </span>
     <span class="time-display__row">
       <span class="time-display__time">{{ mounted ? dmytroTime : '&ndash;&ndash;:&ndash;&ndash;' }}</span>
       <span
@@ -120,6 +141,42 @@ onUnmounted(() => {
   gap: var(--space-2);
   font-size: 12px;
   color: var(--color-muted);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.time-display__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.time-display__status--online  { color: var(--color-status-available); }
+.time-display__status--offline { color: var(--color-muted); }
+
+.time-display__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.time-display__dot--online {
+  background-color: var(--color-status-available);
+  animation: pulse 2s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.time-display__dot--offline {
+  background-color: var(--color-muted);
 }
 
 .time-display__diff {
