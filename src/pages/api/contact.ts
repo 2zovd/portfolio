@@ -61,7 +61,7 @@ export const POST: APIRoute = async ({ request }) => {
     },
     body: JSON.stringify({
       from: 'contact@dmytrotuzov.dev',
-      to: 'dmy2zov@gmail.com',
+      to: import.meta.env.CONTACT_TO_EMAIL,
       reply_to: email.trim(),
       subject: `Portfolio contact: ${name.trim()}`,
       text: `From: ${name.trim()} <${email.trim()}>\n\n${message.trim()}`,
@@ -69,6 +69,8 @@ export const POST: APIRoute = async ({ request }) => {
   });
 
   if (!emailRes.ok) {
+    const resendError = await emailRes.json().catch(() => ({}));
+    console.error('[contact] Resend error', emailRes.status, resendError);
     return json({ success: false, message: 'Failed to send message. Please try again.' }, 500);
   }
 

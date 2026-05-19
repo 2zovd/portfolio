@@ -4,6 +4,7 @@ import { ref, nextTick, onMounted } from 'vue';
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string;
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
+type Field = 'name' | 'email' | 'message';
 
 const formState = ref<FormState>('idle');
 const name = ref('');
@@ -13,7 +14,10 @@ const honeypot = ref('');
 const turnstileToken = ref('');
 const turnstileWidgetId = ref<string | undefined>();
 const errorMessage = ref('');
+const touched = ref(new Set<Field>());
+const errors = ref<Partial<Record<Field, string>>>({});
 
+const formEl = ref<HTMLFormElement | null>(null);
 const successEl = ref<HTMLElement | null>(null);
 const turnstileContainer = ref<HTMLElement | null>(null);
 
@@ -21,15 +25,50 @@ onMounted(() => {
   if (turnstileContainer.value && window.turnstile) {
     turnstileWidgetId.value = window.turnstile.render(turnstileContainer.value, {
       sitekey: TURNSTILE_SITE_KEY,
-      callback: (token: string) => {
-        turnstileToken.value = token;
-      },
-      'expired-callback': () => {
-        turnstileToken.value = '';
-      },
+      callback: (token: string) => { turnstileToken.value = token; },
+      'expired-callback': () => { turnstileToken.value = ''; },
     });
   }
 });
+
+function isValidEmail(value: string): boolean {
+  const el = document.createElement('input');
+  el.type = 'email';
+  el.value = value;
+  return el.validity.valid;
+}
+
+function validateField(field: Field): string | undefined {
+  switch (field) {
+    case 'name':
+      return !name.value.trim() ? 'Name is required.' : undefined;
+    case 'email':
+      if (!email.value.trim()) return 'Email is required.';
+      return !isValidEmail(email.value.trim()) ? 'Enter a valid email address.' : undefined;
+    case 'message':
+      return !message.value.trim() ? 'Message is required.' : undefined;
+  }
+}
+
+function validateAll(): boolean {
+  const e: Partial<Record<Field, string>> = {};
+  (['name', 'email', 'message'] as Field[]).forEach(field => {
+    const err = validateField(field);
+    if (err) e[field] = err;
+  });
+  errors.value = e;
+  return Object.keys(e).length === 0;
+}
+
+function onBlur(field: Field): void {
+  touched.value.add(field);
+  errors.value = { ...errors.value, [field]: validateField(field) };
+}
+
+function onInput(field: Field): void {
+  if (!touched.value.has(field)) return;
+  errors.value = { ...errors.value, [field]: validateField(field) };
+}
 
 function resetTurnstile(): void {
   turnstileToken.value = '';
@@ -39,7 +78,13 @@ function resetTurnstile(): void {
 }
 
 async function submit(): Promise<void> {
-  if (!turnstileToken.value) return;
+  (['name', 'email', 'message'] as Field[]).forEach(f => touched.value.add(f));
+
+  if (!validateAll() || !turnstileToken.value) {
+    await nextTick();
+    formEl.value?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+    return;
+  }
 
   formState.value = 'submitting';
   errorMessage.value = '';
@@ -99,6 +144,7 @@ async function submit(): Promise<void> {
 
     <form
       v-else
+      ref="formEl"
       class="contact-form__form"
       novalidate
       @submit.prevent="submit"
@@ -121,11 +167,23 @@ async function submit(): Promise<void> {
           id="cf-name"
           v-model="name"
           class="contact-form__input"
+          :class="{ 'contact-form__input--error': errors.name }"
           type="text"
           autocomplete="name"
+          maxlength="100"
           aria-required="true"
+          :aria-invalid="!!errors.name"
+          :aria-describedby="errors.name ? 'cf-name-error' : undefined"
           :disabled="formState === 'submitting'"
+          @blur="onBlur('name')"
+          @input="onInput('name')"
         >
+        <span
+          v-if="errors.name"
+          id="cf-name-error"
+          class="contact-form__field-error"
+          aria-live="polite"
+        >{{ errors.name }}</span>
       </div>
 
       <div class="contact-form__field">
@@ -137,11 +195,23 @@ async function submit(): Promise<void> {
           id="cf-email"
           v-model="email"
           class="contact-form__input"
+          :class="{ 'contact-form__input--error': errors.email }"
           type="email"
           autocomplete="email"
+          maxlength="254"
           aria-required="true"
+          :aria-invalid="!!errors.email"
+          :aria-describedby="errors.email ? 'cf-email-error' : undefined"
           :disabled="formState === 'submitting'"
+          @blur="onBlur('email')"
+          @input="onInput('email')"
         >
+        <span
+          v-if="errors.email"
+          id="cf-email-error"
+          class="contact-form__field-error"
+          aria-live="polite"
+        >{{ errors.email }}</span>
       </div>
 
       <div class="contact-form__field">
@@ -153,10 +223,22 @@ async function submit(): Promise<void> {
           id="cf-message"
           v-model="message"
           class="contact-form__textarea"
+          :class="{ 'contact-form__textarea--error': errors.message }"
           rows="6"
+          maxlength="3000"
           aria-required="true"
+          :aria-invalid="!!errors.message"
+          :aria-describedby="errors.message ? 'cf-message-error' : undefined"
           :disabled="formState === 'submitting'"
+          @blur="onBlur('message')"
+          @input="onInput('message')"
         />
+        <span
+          v-if="errors.message"
+          id="cf-message-error"
+          class="contact-form__field-error"
+          aria-live="polite"
+        >{{ errors.message }}</span>
       </div>
 
       <!-- Honeypot — hidden from real users, visible to bots -->
@@ -249,6 +331,16 @@ async function submit(): Promise<void> {
 .contact-form__textarea {
   resize: vertical;
   min-height: 140px;
+}
+
+.contact-form__field-error {
+  font-size: 12px;
+  color: var(--color-accent);
+}
+
+.contact-form__input--error,
+.contact-form__textarea--error {
+  border-color: var(--color-accent);
 }
 
 .contact-form__honeypot {
