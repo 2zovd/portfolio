@@ -8,15 +8,18 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "pnpm run build && wrangler dev",
     "typecheck": "astro check && tsc --noEmit",
     "test:run": "vitest run",
     "test:cov": "vitest run --coverage",
     "lint": "eslint \"src/**/*.{ts,vue}\" --no-error-on-unmatched-pattern",
     "lint:fix": "eslint \"src/**/*.{ts,vue}\" --fix --no-error-on-unmatched-pattern",
-    "astro": "astro"
+    "astro": "astro",
+    "generate-types": "wrangler types",
+    "deploy": "pnpm run build && wrangler deploy"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13.5.2",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.3.0",
     "@astrojs/vue": "^6.0.1",
@@ -46,6 +49,10 @@
     "sharp": "^0.34.5",
     "typescript": "^5.8.3",
     "vitest": "^3.1.4",
-    "vue-eslint-parser": "^10.4.0"
+    "vue-eslint-parser": "^10.4.0",
+    "wrangler": "^4.93.0"
+  },
+  "overrides": {
+    "vite": "^7"
   }
 }
