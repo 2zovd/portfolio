@@ -1,78 +1,89 @@
 ---
-import { Image } from 'astro:assets';
-import { SITE } from '@shared/config/site';
-import SectionHeading from '@shared/ui/SectionHeading.astro';
-import Tag from '@shared/ui/Tag.astro';
-import photo from '../../assets/photo.png';
-import styles from './About.module.scss';
+import { Image } from "astro:assets";
+import { SITE } from "@shared/config/site";
+import SectionHeading from "@shared/ui/SectionHeading.astro";
+import Tag from "@shared/ui/Tag.astro";
+import photo from "../../assets/photo.png";
+import styles from "./About.module.scss";
 
 const skills = [
   {
-    category: 'Core',
-    items: ['JavaScript (ES6+)', 'TypeScript', 'Vue 3', 'Pinia', 'Vuex', 'Vue Router'],
+    category: "Core",
+    items: [
+      "JavaScript (ES6+)",
+      "TypeScript",
+      "Vue 3",
+      "Pinia",
+      "Vuex",
+      "Vue Router",
+    ],
   },
   {
-    category: 'Architecture',
-    items: ['Microfrontends (UMD)', 'Backbone.js / Marionette', 'Backbone.Radio EventBus'],
+    category: "Architecture",
+    items: [
+      "Microfrontends (UMD)",
+      "Backbone.js / Marionette",
+      "Backbone.Radio EventBus",
+    ],
   },
   {
-    category: 'UI & Styling',
-    items: ['SCSS Modules', 'Tailwind CSS', 'HTML5', 'CSS3'],
+    category: "UI & Styling",
+    items: ["SCSS Modules", "Tailwind CSS", "HTML5", "CSS3"],
   },
   {
-    category: 'Tooling',
-    items: ['Vite', 'Webpack', 'Git', 'GitLab CI/CD'],
+    category: "Tooling",
+    items: ["Vite", "Webpack", "Git", "GitLab CI/CD"],
   },
   {
-    category: 'Testing',
-    items: ['Vitest', 'Jest'],
+    category: "Testing",
+    items: ["Vitest", "Jest"],
   },
   {
-    category: 'AI & Automation',
-    items: ['Claude Code', 'GitHub Copilot'],
+    category: "AI & Automation",
+    items: ["Claude Code", "GitHub Copilot"],
   },
 ];
 
 const experience = [
   {
-    company: 'Libertex Group',
-    role: 'Frontend Engineer',
-    period: 'Oct 2018 — Present',
-    location: 'Remote · Cyprus',
+    company: "Libertex Group",
+    role: "Frontend Engineer",
+    period: "Oct 2018 — Present",
+    location: "Remote · Montenegro",
     highlights: [
-      'Shipped features across a hybrid trading terminal built on Backbone.js / Marionette (250k+ lines, ~10-year legacy codebase), working across ES5/AMD modules and TypeScript strict-mode code within the same production system.',
-      'Architected a Vue 3 / TypeScript / Pinia microfrontend delivering AI-generated trading signals to 3M+ platform users — Pinia stores, Axios with JWT interceptors, SCSS Modules, Vite UMD bundle, Crowdin i18n.',
-      'Delivered a Vue 3 / Vuex 4 microfrontend in JavaScript with Tailwind CSS and a broker-aware service layer, targeting 3 platforms (desktop web, iOS, Android); integrated both microfrontends with the host via Backbone.Radio EventBus.',
-      'Drove ongoing modernization of the frontend stack (JavaScript → TypeScript, Vuex → Pinia) and integrated AI tooling (Claude Code, GitHub Copilot) as part of daily workflow.',
-      'Led code reviews and onboarding within an 8-person cross-functional team (2 FE, 3 BE, QA, PO) in an Agile environment.',
+      "Shipped features across a hybrid trading terminal built on Backbone.js / Marionette — a large-scale legacy codebase — working across ES5/AMD modules and TypeScript strict-mode code within the same production system.",
+      "Architected a Vue 3 / TypeScript / Pinia microfrontend for an AI-powered trading feature used by millions of platform users — Pinia stores, Axios with JWT interceptors, SCSS Modules, Vite UMD bundle, Crowdin i18n.",
+      "Delivered a Vue 3 / Vuex 4 microfrontend in JavaScript with Tailwind CSS and a broker-aware service layer, targeting desktop web and native mobile (iOS/Android); integrated both microfrontends with the host via Backbone.Radio EventBus.",
+      "Drove ongoing modernisation of the frontend stack (JavaScript → TypeScript, Vuex → Pinia) and integrated AI tooling (Claude Code, GitHub Copilot) as part of daily workflow.",
+      "Led code reviews and onboarding within a cross-functional team of 8 in an Agile environment.",
     ],
   },
   {
-    company: 'Mobilsoft',
-    role: 'UI Developer',
-    period: 'Feb 2017 — Mar 2018',
-    location: 'Remote',
+    company: "Mobilsoft",
+    role: "UI Developer",
+    period: "Feb 2017 — Mar 2018",
+    location: "Remote",
     highlights: [
-      'Built responsive, accessible UIs for an iGaming platform, including interactive game interfaces with optimised animation performance and cross-device compatibility.',
-      'Enhanced Laravel-based applications on the frontend side.',
+      "Built responsive, accessible UIs for an iGaming platform, including interactive game interfaces with optimised animation performance and cross-device compatibility.",
+      "Enhanced Laravel-based applications on the frontend side.",
     ],
   },
   {
-    company: 'Contract Frontend Developer',
-    role: 'Frontend Developer',
-    period: 'Jul 2016 — Jun 2018',
-    location: 'Remote',
+    company: "Contract Frontend Developer",
+    role: "Frontend Developer",
+    period: "Jul 2016 — Jun 2018",
+    location: "Remote",
     highlights: [
-      'Delivered frontend projects for international clients via direct contracts and Upwork: responsive landing pages, business websites, and a learning platform.',
+      "Delivered frontend projects for international clients via direct contracts and Upwork: responsive landing pages, business websites, and a learning platform.",
     ],
   },
   {
-    company: 'Social Platform [NDA]',
-    role: 'UI Developer',
-    period: 'Dec 2015 — Jun 2016',
-    location: 'Remote',
+    company: "Social Platform [NDA]",
+    role: "UI Developer",
+    period: "Dec 2015 — Jun 2016",
+    location: "Remote",
     highlights: [
-      'Built the complete frontend for a social platform from scratch (desktop and mobile web) — semantic HTML, responsive layouts, cross-browser compatibility. The platform remains in production to this day.',
+      "Built the complete frontend for a social platform from scratch (desktop and mobile web) — semantic HTML, responsive layouts, cross-browser compatibility. The platform remains in production to this day.",
     ],
   },
 ];
@@ -87,7 +98,6 @@ const experience = [
     />
 
     <div class={styles.grid}>
-
       <!-- Left: bio + skills -->
       <div class={styles.left}>
         <div class={styles.about__photo_wrap}>
@@ -100,32 +110,35 @@ const experience = [
         </div>
         <div class={styles.bio}>
           <p class={styles.bio__text}>
-            Frontend Engineer based in {SITE.location}, specialising in hybrid legacy/modern
-            architectures for fintech trading platforms. For 7+ years I've been shipping
-            production features at Libertex Group — products used by 3M+ traders across
-            120+ countries.
+            Frontend Engineer based in {SITE.location}, specialising in hybrid
+            legacy/modern architectures for fintech trading platforms. For 7+
+            years I've been shipping production features at Libertex Group —
+            products used by 3M+ traders across 120+ countries.
           </p>
           <p class={styles.bio__text}>
-            I work across Backbone.js / Marionette legacy stacks and Vue 3 microfrontend
-            architectures within the same production system. I care about clean component
-            boundaries, strict typing, and hands-on modernization — and I use AI tooling
-            (Claude Code, GitHub Copilot) as part of my daily workflow.
+            I work across Backbone.js / Marionette legacy stacks and Vue 3
+            microfrontend architectures within the same production system. I
+            care about clean component boundaries, strict typing, and hands-on
+            modernization — and I use AI tooling (Claude Code, GitHub Copilot)
+            as part of my daily workflow.
           </p>
         </div>
 
         <div class={styles.skills}>
           <h3 class={styles.skills__heading}>Skills</h3>
           <div class={styles.skills__grid}>
-            {skills.map((group) => (
-              <div class={styles.skills__group}>
-                <span class={styles.skills__category}>{group.category}</span>
-                <div class={styles.skills__tags}>
-                  {group.items.map((item) => (
-                    <Tag label={item} />
-                  ))}
+            {
+              skills.map((group) => (
+                <div class={styles.skills__group}>
+                  <span class={styles.skills__category}>{group.category}</span>
+                  <div class={styles.skills__tags}>
+                    {group.items.map((item) => (
+                      <Tag label={item} />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            }
           </div>
         </div>
       </div>
@@ -134,30 +147,33 @@ const experience = [
       <div class={styles.right}>
         <h3 class={styles.timeline__heading}>Experience</h3>
         <ol class={styles.timeline} role="list">
-          {experience.map((job, i) => (
-            <li class={styles.timeline__item}>
-              <div class={styles.timeline__marker} aria-hidden="true">
-                <span class={styles.timeline__dot} />
-                {i < experience.length - 1 && <span class={styles.timeline__line} />}
-              </div>
-              <div class={styles.timeline__content}>
-                <div class={styles.timeline__header}>
-                  <span class={styles.timeline__company}>{job.company}</span>
-                  <span class={styles.timeline__period}>{job.period}</span>
+          {
+            experience.map((job, i) => (
+              <li class={styles.timeline__item}>
+                <div class={styles.timeline__marker} aria-hidden="true">
+                  <span class={styles.timeline__dot} />
+                  {i < experience.length - 1 && (
+                    <span class={styles.timeline__line} />
+                  )}
                 </div>
-                <span class={styles.timeline__role}>{job.role}</span>
-                <span class={styles.timeline__location}>{job.location}</span>
-                <ul class={styles.timeline__highlights} role="list">
-                  {job.highlights.map((h) => (
-                    <li class={styles.timeline__highlight}>{h}</li>
-                  ))}
-                </ul>
-              </div>
-            </li>
-          ))}
+                <div class={styles.timeline__content}>
+                  <div class={styles.timeline__header}>
+                    <span class={styles.timeline__company}>{job.company}</span>
+                    <span class={styles.timeline__period}>{job.period}</span>
+                  </div>
+                  <span class={styles.timeline__role}>{job.role}</span>
+                  <span class={styles.timeline__location}>{job.location}</span>
+                  <ul class={styles.timeline__highlights} role="list">
+                    {job.highlights.map((h) => (
+                      <li class={styles.timeline__highlight}>{h}</li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ))
+          }
         </ol>
       </div>
-
     </div>
   </div>
 </section>
