@@ -93,7 +93,7 @@ onUnmounted(() => {
         class="time-display__sep"
         aria-hidden="true"
       >·</span>
-      <span class="time-display__location">Montenegro · CET</span>
+      <span class="time-display__location">CET</span>
     </span>
     <span
       v-if="mounted && visitorTime && diffLabel"

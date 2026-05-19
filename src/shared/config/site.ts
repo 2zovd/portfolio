@@ -27,7 +27,7 @@ export const SITE: SiteConfig = {
   url: 'https://dmytrotuzov.dev',
   description:
     'Frontend Engineer with 7+ years building high-performance web applications. Specialising in Vue 3, TypeScript, and scalable architecture.',
-  location: 'Montenegro · Remote',
+  location: 'Remote',
   available: false,
   email: 'dmy2zov@gmail.com',
   socials: [
