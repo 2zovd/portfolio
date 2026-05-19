@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, onMounted } from 'vue';
+import { ref, nextTick, onMounted, onUnmounted } from 'vue';
 
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string;
 
@@ -21,15 +21,22 @@ const formEl = ref<HTMLFormElement | null>(null);
 const successEl = ref<HTMLElement | null>(null);
 const turnstileContainer = ref<HTMLElement | null>(null);
 
+let pollTimer: ReturnType<typeof setTimeout> | undefined;
+
 onMounted(() => {
-  if (turnstileContainer.value && window.turnstile) {
+  const render = () => {
+    if (!turnstileContainer.value) return;
+    if (!window.turnstile) { pollTimer = setTimeout(render, 50); return; }
     turnstileWidgetId.value = window.turnstile.render(turnstileContainer.value, {
       sitekey: TURNSTILE_SITE_KEY,
       callback: (token: string) => { turnstileToken.value = token; },
       'expired-callback': () => { turnstileToken.value = ''; },
     });
-  }
+  };
+  render();
 });
+
+onUnmounted(() => { clearTimeout(pollTimer); });
 
 function isValidEmail(value: string): boolean {
   const el = document.createElement('input');
