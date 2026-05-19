@@ -16,7 +16,6 @@ type SiteConfig = {
   description: string;
   location: string;
   available: boolean;
-  email: string;
   socials: Social[];
   nav: NavItem[];
 };
@@ -29,7 +28,6 @@ export const SITE: SiteConfig = {
     'Frontend Engineer with 7+ years building high-performance web applications. Specialising in Vue 3, TypeScript, and scalable architecture.',
   location: 'Remote',
   available: false,
-  email: 'dmy2zov@gmail.com',
   socials: [
     { label: 'GitHub', href: 'https://github.com/2zovd', icon: 'github' },
     { label: 'LinkedIn', href: 'https://linkedin.com/in/dmitrytuzov', icon: 'linkedin' },
