@@ -130,4 +130,11 @@ defineEmits<{
     transition: none;
   }
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .form-field__input,
+  .form-field__textarea {
+    font-size: 16px;
+  }
+}
 </style>
