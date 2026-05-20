@@ -22,7 +22,7 @@ const { title, subtitle, id } = Astro.props;
   }
 
   .section-heading__title {
-    font-size: 28px;
+    font-size: var(--font-size-5xl);
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.2;
@@ -30,7 +30,7 @@ const { title, subtitle, id } = Astro.props;
   }
 
   .section-heading__subtitle {
-    font-size: 14px;
+    font-size: var(--font-size-base);
     line-height: 1.7;
     color: var(--color-muted);
   }

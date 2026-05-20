@@ -35,9 +35,30 @@
   --radius-pill: 999px;
   --radius-full: 50%;
 
+  // --- Font size scale ---
+  --font-size-2xs:  10px;
+  --font-size-xs:   11px;
+  --font-size-sm:   12px;
+  --font-size-md:   13px;
+  --font-size-base: 14px;
+  --font-size-body: 15px;
+  --font-size-lg:   16px;
+  --font-size-xl:   18px;
+  --font-size-2xl:  20px;
+  --font-size-3xl:  22px;
+  --font-size-4xl:  24px;
+  --font-size-5xl:  28px;
+  --font-size-6xl:  32px;
+  --font-size-7xl:  38px;
+  --font-size-8xl:  40px;
+  --font-size-9xl:  72px;
+
   // --- Typography ---
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  // --- Layout ---
+  --container-max-width: 1200px;
 
   // --- Z-index scale ---
   --z-header:  100;

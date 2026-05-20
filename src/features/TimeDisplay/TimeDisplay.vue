@@ -152,7 +152,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: 13px;
+  font-size: var(--font-size-md);
   font-weight: 500;
 }
 
@@ -160,7 +160,7 @@ onUnmounted(() => {
 .time-display__status--offline { color: var(--color-muted); }
 
 .time-display__suffix {
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   font-weight: 400;
   opacity: 0.7;
 }
@@ -190,11 +190,6 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
-}
-
 .time-display__dot--online {
   background-color: var(--color-status-available);
   animation: pulse 2s ease-in-out infinite;
@@ -216,7 +211,7 @@ onUnmounted(() => {
 
 .time-display__time {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--font-size-md);
   font-weight: 500;
   color: var(--color-text);
   letter-spacing: 0.02em;
@@ -227,7 +222,7 @@ onUnmounted(() => {
 }
 
 .time-display__location {
-  font-size: 13px;
+  font-size: var(--font-size-md);
   color: var(--color-subtle);
 }
 
@@ -235,12 +230,12 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--color-muted);
 }
 
 .time-display__diff {
-  font-size: 10px;
+  font-size: var(--font-size-2xs);
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;

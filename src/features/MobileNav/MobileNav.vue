@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
 import { SITE } from '@shared/config/site';
+import { useFocusTrap } from '@shared/lib/useFocusTrap';
 
 const isOpen = ref(false);
 const isMounted = ref(false);
@@ -9,6 +10,8 @@ const currentPath = ref('');
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+const { activate, deactivate } = useFocusTrap(overlayRef, () => close());
 
 onMounted(() => {
   isMounted.value = true;
@@ -26,44 +29,18 @@ function close(): void {
   isOpen.value = false;
 }
 
-function onKeydown(e: KeyboardEvent): void {
-  if (e.key === 'Escape') {
-    close();
-    return;
-  }
-  if (e.key !== 'Tab' || !overlayRef.value) return;
-
-  const focusable = Array.from(overlayRef.value.querySelectorAll<HTMLElement>(FOCUSABLE));
-  if (focusable.length === 0) return;
-
-  const first = focusable[0]!;
-  const last = focusable[focusable.length - 1]!;
-
-  if (e.shiftKey) {
-    if (document.activeElement === first) {
-      e.preventDefault();
-      last.focus();
-    }
-  } else {
-    if (document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
-    }
-  }
-}
-
 watch(isOpen, (open) => {
   if (open) {
-    document.addEventListener('keydown', onKeydown);
+    activate();
     document.body.style.overflow = 'hidden';
   } else {
-    document.removeEventListener('keydown', onKeydown);
+    deactivate();
     document.body.style.overflow = '';
   }
 });
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', onKeydown);
+  deactivate();
   document.body.style.overflow = '';
 });
 </script>
@@ -168,7 +145,7 @@ onUnmounted(() => {
   display: none;
   position: relative;
 
-  @media (max-width: 767px) {
+  @media (max-width: #{$bp-md - 1px}) {
     display: block;
   }
 }
@@ -282,7 +259,7 @@ onUnmounted(() => {
 }
 
 .mobile-nav__link {
-  font-size: 28px;
+  font-size: var(--font-size-5xl);
   font-weight: 500;
   color: var(--color-muted);
   text-decoration: none;

@@ -1,0 +1,61 @@
+---
+import Tag from './Tag.astro';
+import { formatMonthYear, formatISO } from '@shared/lib/formatDate';
+
+interface Props {
+  pubDate: Date;
+  tags: string[];
+  readingTime?: string;
+  maxTags?: number;
+}
+
+const { pubDate, tags, readingTime, maxTags } = Astro.props;
+const visibleTags = maxTags !== undefined ? tags.slice(0, maxTags) : tags;
+---
+
+<div class="post-meta">
+  <time class="post-meta__date" datetime={formatISO(pubDate)}>
+    {formatMonthYear(pubDate)}
+  </time>
+  {readingTime && (
+    <>
+      <span class="post-meta__sep" aria-hidden="true">·</span>
+      <span class="post-meta__reading-time">{readingTime}</span>
+    </>
+  )}
+  {visibleTags.length > 0 && (
+    <span class="post-meta__sep" aria-hidden="true">·</span>
+  )}
+  <div class="post-meta__tags">
+    {visibleTags.map((tag) => <Tag label={tag} />)}
+  </div>
+</div>
+
+<style>
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .post-meta__date,
+  .post-meta__reading-time {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-subtle);
+    white-space: nowrap;
+  }
+
+  .post-meta__sep {
+    color: var(--color-border-hover);
+  }
+
+  .post-meta__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+</style>

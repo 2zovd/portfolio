@@ -2,6 +2,9 @@ import { defineConfig } from 'astro/config';
 import vue from '@astrojs/vue';
 import sitemap from '@astrojs/sitemap';
 import cloudflare from '@astrojs/cloudflare';
+import { fileURLToPath } from 'url';
+
+const varsPath = fileURLToPath(new URL('./src/app/styles/_vars', import.meta.url));
 
 export default defineConfig({
   adapter: cloudflare({ imageService: 'passthrough' }),
@@ -18,6 +21,13 @@ export default defineConfig({
   },
   integrations: [vue(), sitemap()],
   vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: `@use "${varsPath}" as *;\n`,
+        },
+      },
+    },
     resolve: {
       alias: {
         '@shared': '/src/shared',

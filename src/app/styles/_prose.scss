@@ -3,7 +3,7 @@
 
 .prose {
   color: var(--color-text);
-  font-size: 16px;
+  font-size: var(--font-size-lg);
   line-height: 1.75;
   max-width: 68ch;
 
@@ -22,9 +22,9 @@
     margin-bottom: var(--space-4);
   }
 
-  h2 { font-size: 22px; }
-  h3 { font-size: 18px; }
-  h4 { font-size: 16px; }
+  h2 { font-size: var(--font-size-3xl); }
+  h3 { font-size: var(--font-size-xl); }
+  h4 { font-size: var(--font-size-lg); }
 
   ul,
   ol {
@@ -42,7 +42,7 @@
 
   code {
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: var(--font-size-md);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     padding: 2px var(--space-1);
@@ -51,7 +51,7 @@
 
   pre {
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: var(--font-size-md);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     padding: var(--space-5);
@@ -120,7 +120,7 @@
     border: 1px solid var(--color-border);
     color: var(--color-muted);
     font-family: var(--font-sans);
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     font-weight: 500;
     letter-spacing: 0.04em;
     cursor: pointer;

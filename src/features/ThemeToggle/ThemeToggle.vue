@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { THEME_STORAGE_KEY } from '@shared/config/constants';
 
 const isLight = ref(false);
 
@@ -11,10 +12,10 @@ function toggle(): void {
   isLight.value = !isLight.value;
   if (isLight.value) {
     document.documentElement.classList.add('light');
-    localStorage.setItem('theme', 'light');
+    localStorage.setItem(THEME_STORAGE_KEY, 'light');
   } else {
     document.documentElement.classList.remove('light');
-    localStorage.setItem('theme', 'dark');
+    localStorage.setItem(THEME_STORAGE_KEY, 'dark');
   }
 }
 </script>

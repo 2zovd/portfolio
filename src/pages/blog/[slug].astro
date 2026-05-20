@@ -1,8 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import PageLayout from '@app/layouts/PageLayout.astro';
-import Tag from '@shared/ui/Tag.astro';
-import { formatMonthYear, formatISO } from '@shared/lib/formatDate';
+import PostMeta from '@shared/ui/PostMeta.astro';
+import { formatISO } from '@shared/lib/formatDate';
 import { readingTime } from '@shared/lib/readingTime';
 import { SITE } from '@shared/config/site';
 import { CodeCopy } from '@features/CodeCopy';
@@ -48,23 +48,7 @@ const pageSchema: Record<string, unknown> = {
     <a href="/blog" class="post-layout__back">← Blog</a>
 
     <header class="post-layout__header">
-      <div class="post-layout__meta">
-        <time class="post-layout__date" datetime={formatISO(pubDate)}>
-          {formatMonthYear(pubDate)}
-        </time>
-        {postReadingTime && (
-          <>
-            <span class="post-layout__sep" aria-hidden="true">·</span>
-            <span class="post-layout__reading-time">{postReadingTime}</span>
-          </>
-        )}
-        {tags.length > 0 && (
-          <span class="post-layout__sep" aria-hidden="true">·</span>
-        )}
-        <div class="post-layout__tags">
-          {tags.map((tag) => <Tag label={tag} />)}
-        </div>
-      </div>
+      <PostMeta pubDate={pubDate} tags={tags} readingTime={postReadingTime} />
 
       <h1 class="post-layout__title">{title}</h1>
       <p class="post-layout__desc">{description}</p>
@@ -76,7 +60,7 @@ const pageSchema: Record<string, unknown> = {
   </article>
 </PageLayout>
 
-<style>
+<style lang="scss">
   .post-layout {
     max-width: 720px;
     margin: 0 auto;
@@ -86,7 +70,7 @@ const pageSchema: Record<string, unknown> = {
   .post-layout__back {
     display: inline-block;
     margin-bottom: var(--space-8);
-    font-size: 12px;
+    font-size: var(--font-size-sm);
     font-weight: 500;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -103,7 +87,7 @@ const pageSchema: Record<string, unknown> = {
   }
 
   .post-layout__reading-time {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -126,7 +110,7 @@ const pageSchema: Record<string, unknown> = {
   }
 
   .post-layout__date {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -145,20 +129,20 @@ const pageSchema: Record<string, unknown> = {
   }
 
   .post-layout__title {
-    font-size: 32px;
+    font-size: var(--font-size-6xl);
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.25;
     color: var(--color-text);
     margin-bottom: var(--space-4);
 
-    @media (max-width: 767px) {
-      font-size: 24px;
+    @media (max-width: #{$bp-md - 1px}) {
+      font-size: var(--font-size-4xl);
     }
   }
 
   .post-layout__desc {
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     line-height: 1.6;
     color: var(--color-muted);
   }

@@ -1,27 +1,12 @@
 ---
 import { Image } from "astro:assets";
 import { SITE } from "@shared/config/site";
+import { HERO_TAGS, TECH_STACK } from "@shared/data/hero";
 import { TimeDisplay } from "@features/TimeDisplay";
 import { HeroCanvas } from "@features/HeroCanvas";
 import { TerminalCard } from "@features/TerminalCard";
 import photo from "../../assets/photo.png";
 import styles from "./Hero.module.scss";
-
-const tags = ["Vue 3", "TypeScript", "Fintech", "Microfrontends"];
-const stack = [
-  "JavaScript",
-  "TypeScript",
-  "Vue 3",
-  "Pinia",
-  "Vuex",
-  "Astro",
-  "Backbone.js",
-  "Vite",
-  "Webpack",
-  "SCSS",
-  "Vitest",
-  "Cordova",
-];
 ---
 
 <section class={styles.hero} aria-labelledby="hero-heading">
@@ -42,7 +27,7 @@ const stack = [
       </div>
 
       <div class={styles.tags} aria-label="Specializations">
-        {tags.map((t) => <span class={styles.tag}>{t}</span>)}
+        {HERO_TAGS.map((t) => <span class={styles.tag}>{t}</span>)}
       </div>
 
       <h1 id="hero-heading" class={styles.heading}>
@@ -81,249 +66,31 @@ const stack = [
 </section>
 
 <script>
-  (function () {
-    let cleanup: (() => void) | null = null;
+  import { initHeroPhotoEffect } from "@shared/lib/heroPhotoEffect";
 
-    function init(): (() => void) | null {
-      const wrap = document.querySelector("[data-hero-photo-wrap]");
-      if (
-        !wrap ||
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      )
-        return null;
+  let cleanup: (() => void) | null = null;
 
-      const img = wrap.querySelector<HTMLImageElement>("img");
-      if (!img) return null;
-      const imgEl: HTMLImageElement = img;
+  function init(): (() => void) | null {
+    const wrap = document.querySelector<HTMLElement>("[data-hero-photo-wrap]");
+    if (!wrap || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      return null;
+    const img = wrap.querySelector<HTMLImageElement>("img");
+    if (!img) return null;
+    return initHeroPhotoEffect(wrap, img);
+  }
 
-      const canvas = document.createElement("canvas");
-      canvas.width = 120;
-      canvas.height = 120;
-      Object.assign(canvas.style, {
-        position: "absolute",
-        top: "0",
-        left: "0",
-        width: "120px",
-        height: "120px",
-        pointerEvents: "none",
-        opacity: "0",
-      });
-      wrap.appendChild(canvas);
-
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        canvas.remove();
-        return null;
-      }
-      const renderCtx: CanvasRenderingContext2D = ctx;
-
-      // destroyed flag stops all async activity after cleanup() is called
-      let destroyed = false;
-
-      // Offscreen canvases are built lazily on first drawFrame call so the
-      // image pixel data is guaranteed to be decoded at that point.
-      let gc: HTMLCanvasElement | null = null;
-      let cc: HTMLCanvasElement | null = null;
-
-      function makeOffscreen(filter: string): HTMLCanvasElement | null {
-        const c = document.createElement("canvas");
-        c.width = 120;
-        c.height = 120;
-        const cx = c.getContext("2d");
-        if (!cx) return null;
-        cx.filter = filter;
-        cx.drawImage(imgEl, 0, 0, 120, 120);
-        return c;
-      }
-
-      function setupOffscreen(): boolean {
-        if (gc && cc) return true;
-        gc = makeOffscreen("grayscale(1) contrast(1.05)");
-        cc = makeOffscreen("contrast(1.05)");
-        return !!(gc && cc);
-      }
-
-      interface Band {
-        start: number;
-        end: number;
-        isNoise: boolean;
-      }
-
-      function makeDisplacements(): { d: Int16Array; bands: Band[] } {
-        const raw = new Float32Array(120);
-        const bands: Band[] = [];
-
-        // 2–4 horizontal interference bands with random large displacement
-        const numBands = 2 + Math.floor(Math.random() * 3);
-        for (let b = 0; b < numBands; b++) {
-          const start = Math.floor(Math.random() * 108);
-          const h = 4 + Math.floor(Math.random() * 16);
-          const end = Math.min(start + h, 120);
-          const sign = Math.random() < 0.5 ? 1 : -1;
-          const dx = sign * (8 + Math.random() * 20);
-          bands.push({ start, end, isNoise: Math.random() < 0.35 });
-          for (let y = start; y < end; y++) raw[y] = dx;
-        }
-
-        // Sparse micro-jitter on non-band rows
-        for (let y = 0; y < 120; y++) {
-          if (raw[y]! === 0 && Math.random() < 0.05)
-            raw[y] = (Math.random() - 0.5) * 6;
-        }
-
-        // Normalize to zero sum — guarantees no net image shift
-        let sum = 0;
-        for (let y = 0; y < 120; y++) sum += raw[y]!;
-        const mean = sum / 120;
-        const d = new Int16Array(120);
-        for (let y = 0; y < 120; y++) d[y] = Math.round(raw[y]! - mean);
-
-        return { d, bands };
-      }
-
-      function drawFrame(colored: boolean) {
-        if (!setupOffscreen()) return;
-        const src = colored ? cc! : gc!;
-        const { d, bands } = makeDisplacements();
-        const bg =
-          getComputedStyle(document.documentElement)
-            .getPropertyValue("--color-bg")
-            .trim() || "#0c0c0a";
-
-        renderCtx.filter = "none";
-        renderCtx.fillStyle = bg;
-        renderCtx.fillRect(0, 0, 120, 120);
-
-        for (let y = 0; y < 120; y++) {
-          renderCtx.drawImage(src, 0, y, 120, 1, d[y]!, y, 120, 1);
-        }
-
-        // Semi-transparent white noise bars on marked bands
-        for (const band of bands) {
-          if (band.isNoise) {
-            renderCtx.fillStyle = `rgba(255,255,255,${0.12 + Math.random() * 0.22})`;
-            renderCtx.fillRect(0, band.start, 120, band.end - band.start);
-          }
-        }
-      }
-
-      let hovered = false;
-      let hoverTimerId: ReturnType<typeof setInterval> | null = null;
-      let burstIntervalId: ReturnType<typeof setInterval> | null = null;
-      let scheduleTimeoutId: ReturnType<typeof setTimeout> | null = null;
-
-      function runBurst() {
-        if (destroyed) return;
-        let i = 0;
-        canvas.style.opacity = "1";
-        imgEl.style.opacity = "0";
-        drawFrame(false);
-        burstIntervalId = setInterval(() => {
-          if (destroyed) {
-            clearInterval(burstIntervalId!);
-            burstIntervalId = null;
-            return;
-          }
-          drawFrame(false);
-          if (++i >= 6) {
-            if (burstIntervalId !== null) {
-              clearInterval(burstIntervalId);
-              burstIntervalId = null;
-            }
-            if (!hovered) {
-              canvas.style.opacity = "0";
-              imgEl.style.opacity = "1";
-            }
-          }
-        }, 50);
-      }
-
-      function scheduleNext() {
-        if (destroyed) return;
-        scheduleTimeoutId = setTimeout(
-          () => {
-            if (!hovered) runBurst();
-            scheduleNext();
-          },
-          1000 + Math.random() * 4000,
-        );
-      }
-
-      function onEnter() {
-        if (destroyed) return;
-        hovered = true;
-        canvas.style.opacity = "1";
-        imgEl.style.opacity = "0";
-        drawFrame(true);
-        hoverTimerId = setInterval(() => {
-          if (destroyed) {
-            clearInterval(hoverTimerId!);
-            hoverTimerId = null;
-            return;
-          }
-          drawFrame(true);
-        }, 80);
-      }
-
-      function onLeave() {
-        hovered = false;
-        if (hoverTimerId !== null) {
-          clearInterval(hoverTimerId);
-          hoverTimerId = null;
-        }
-        canvas.style.opacity = "0";
-        imgEl.style.opacity = "1";
-      }
-
-      wrap.addEventListener("mouseenter", onEnter);
-      wrap.addEventListener("mouseleave", onLeave);
-
-      function start() {
-        if (destroyed) return;
-        scheduleNext();
-      }
-
-      // naturalWidth > 0 ensures the image actually has pixel data decoded
-      if (imgEl.complete && imgEl.naturalWidth > 0) {
-        scheduleNext();
-      } else {
-        imgEl.addEventListener("load", start, { once: true });
-      }
-
-      return () => {
-        destroyed = true;
-        if (hoverTimerId !== null) {
-          clearInterval(hoverTimerId);
-          hoverTimerId = null;
-        }
-        if (burstIntervalId !== null) {
-          clearInterval(burstIntervalId);
-          burstIntervalId = null;
-        }
-        if (scheduleTimeoutId !== null) {
-          clearTimeout(scheduleTimeoutId);
-          scheduleTimeoutId = null;
-        }
-        wrap.removeEventListener("mouseenter", onEnter);
-        wrap.removeEventListener("mouseleave", onLeave);
-        canvas.remove();
-        imgEl.style.opacity = "1";
-      };
-    }
-
-    document.addEventListener("astro:page-load", () => {
-      cleanup = init();
-    });
-    document.addEventListener("astro:before-swap", () => {
-      cleanup?.();
-      cleanup = null;
-    });
-  })();
+  document.addEventListener("astro:page-load", () => {
+    cleanup = init();
+  });
+  document.addEventListener("astro:before-swap", () => {
+    cleanup?.();
+    cleanup = null;
+  });
 </script>
 
 <!-- Stack bar -->
 <div class={styles.stack} aria-label="Technology stack">
   <div class={styles.stack__scroll}>
-    {stack.map((t) => <span class={styles.stack__tag}>{t}</span>)}
+    {TECH_STACK.map((t) => <span class={styles.stack__tag}>{t}</span>)}
   </div>
 </div>

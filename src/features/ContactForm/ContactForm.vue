@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue';
+import { CONTACT_API_URL } from '@shared/config/constants';
+import FormField from '@shared/ui/FormField.vue';
 
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string;
 
@@ -128,7 +130,7 @@ async function submit(): Promise<void> {
   errorMessage.value = '';
 
   try {
-    const res = await fetch('/api/contact', {
+    const res = await fetch(CONTACT_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -196,88 +198,47 @@ async function submit(): Promise<void> {
         {{ errorMessage }}
       </p>
 
-      <div class="contact-form__field">
-        <label
-          class="contact-form__label"
-          for="cf-name"
-        >Name</label>
-        <input
-          id="cf-name"
-          v-model="name"
-          class="contact-form__input"
-          :class="{ 'contact-form__input--error': errors.name }"
-          type="text"
-          autocomplete="name"
-          maxlength="100"
-          aria-required="true"
-          :aria-invalid="!!errors.name"
-          :aria-describedby="errors.name ? 'cf-name-error' : undefined"
-          :disabled="formState === 'submitting'"
-          @blur="onBlur('name')"
-          @input="onInput('name')"
-        >
-        <span
-          v-if="errors.name"
-          id="cf-name-error"
-          class="contact-form__field-error"
-          aria-live="polite"
-        >{{ errors.name }}</span>
-      </div>
+      <FormField
+        name="cf-name"
+        label="Name"
+        :model-value="name"
+        :error="errors.name"
+        type="text"
+        autocomplete="name"
+        :maxlength="100"
+        :disabled="formState === 'submitting'"
+        @update:model-value="name = $event"
+        @blur="onBlur('name')"
+        @input="onInput('name')"
+      />
 
-      <div class="contact-form__field">
-        <label
-          class="contact-form__label"
-          for="cf-email"
-        >Email</label>
-        <input
-          id="cf-email"
-          v-model="email"
-          class="contact-form__input"
-          :class="{ 'contact-form__input--error': errors.email }"
-          type="email"
-          autocomplete="email"
-          maxlength="254"
-          aria-required="true"
-          :aria-invalid="!!errors.email"
-          :aria-describedby="errors.email ? 'cf-email-error' : undefined"
-          :disabled="formState === 'submitting'"
-          @blur="onBlur('email')"
-          @input="onInput('email')"
-        >
-        <span
-          v-if="errors.email"
-          id="cf-email-error"
-          class="contact-form__field-error"
-          aria-live="polite"
-        >{{ errors.email }}</span>
-      </div>
+      <FormField
+        name="cf-email"
+        label="Email"
+        :model-value="email"
+        :error="errors.email"
+        type="email"
+        autocomplete="email"
+        :maxlength="254"
+        :disabled="formState === 'submitting'"
+        @update:model-value="email = $event"
+        @blur="onBlur('email')"
+        @input="onInput('email')"
+      />
 
-      <div class="contact-form__field">
-        <label
-          class="contact-form__label"
-          for="cf-message"
-        >Message</label>
-        <textarea
-          id="cf-message"
-          v-model="message"
-          class="contact-form__textarea"
-          :class="{ 'contact-form__textarea--error': errors.message }"
-          rows="6"
-          maxlength="3000"
-          aria-required="true"
-          :aria-invalid="!!errors.message"
-          :aria-describedby="errors.message ? 'cf-message-error' : undefined"
-          :disabled="formState === 'submitting'"
-          @blur="onBlur('message')"
-          @input="onInput('message')"
-        />
-        <span
-          v-if="errors.message"
-          id="cf-message-error"
-          class="contact-form__field-error"
-          aria-live="polite"
-        >{{ errors.message }}</span>
-      </div>
+      <FormField
+        name="cf-message"
+        label="Message"
+        :model-value="message"
+        :error="errors.message"
+        type="textarea"
+        :rows="6"
+        :maxlength="3000"
+        :disabled="formState === 'submitting'"
+        @update:model-value="message = $event"
+        @blur="onBlur('message')"
+        @input="onInput('message')"
+      />
 
       <!-- Honeypot — hidden from real users, visible to bots -->
       <div
@@ -331,64 +292,6 @@ async function submit(): Promise<void> {
   gap: var(--space-5);
 }
 
-.contact-form__field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.contact-form__label {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-subtle);
-}
-
-.contact-form__input,
-.contact-form__textarea {
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 0;
-  color: var(--color-text);
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.5;
-  transition: border-color var(--transition-fast);
-  box-sizing: border-box;
-
-  &:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-    border-color: var(--color-accent);
-  }
-
-  &:hover:not(:disabled) {
-    border-color: var(--color-border-hover);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.contact-form__textarea {
-  resize: vertical;
-  min-height: 140px;
-}
-
-.contact-form__field-error {
-  font-size: 12px;
-  color: var(--color-accent);
-}
-
-.contact-form__input--error,
-.contact-form__textarea--error {
-  border-color: var(--color-accent);
-}
 
 .contact-form__honeypot {
   position: absolute;
@@ -410,12 +313,12 @@ async function submit(): Promise<void> {
 }
 
 .contact-form__turnstile-error {
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--color-accent);
 }
 
 .contact-form__error {
-  font-size: 13px;
+  font-size: var(--font-size-md);
   color: var(--color-accent);
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-accent);
@@ -428,7 +331,7 @@ async function submit(): Promise<void> {
   background: var(--color-accent);
   color: var(--color-bg);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--font-size-md);
   font-weight: 600;
   letter-spacing: 0.04em;
   border: none;
@@ -464,24 +367,22 @@ async function submit(): Promise<void> {
 }
 
 .contact-form__success-icon {
-  font-size: 24px;
+  font-size: var(--font-size-4xl);
   color: var(--color-accent);
 }
 
 .contact-form__success-text {
-  font-size: 20px;
+  font-size: var(--font-size-2xl);
   font-weight: 600;
   color: var(--color-text);
 }
 
 .contact-form__success-sub {
-  font-size: 14px;
+  font-size: var(--font-size-base);
   color: var(--color-muted);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .contact-form__input,
-  .contact-form__textarea,
   .contact-form__submit {
     transition: none;
   }

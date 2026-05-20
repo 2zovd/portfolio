@@ -1,8 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import PageLayout from '@app/layouts/PageLayout.astro';
-import Tag from '@shared/ui/Tag.astro';
-import { formatMonthYear, formatISO } from '@shared/lib/formatDate';
+import PostMeta from '@shared/ui/PostMeta.astro';
+import { formatISO } from '@shared/lib/formatDate';
 import { SITE } from '@shared/config/site';
 
 export async function getStaticPaths() {
@@ -46,17 +46,7 @@ const actionLinks = [
     <a href="/portfolio" class="project-layout__back">← Work</a>
 
     <header class="project-layout__header">
-      <div class="project-layout__meta">
-        <time class="project-layout__date" datetime={formatISO(date)}>
-          {formatMonthYear(date)}
-        </time>
-        {tags.length > 0 && (
-          <span class="project-layout__sep" aria-hidden="true">·</span>
-        )}
-        <div class="project-layout__tags">
-          {tags.map((tag) => <Tag label={tag} />)}
-        </div>
-      </div>
+      <PostMeta pubDate={date} tags={tags} />
 
       <h1 class="project-layout__title">{title}</h1>
       <p class="project-layout__desc">{description}</p>
@@ -86,7 +76,7 @@ const actionLinks = [
   </article>
 </PageLayout>
 
-<style>
+<style lang="scss">
   .project-layout {
     max-width: 720px;
     margin: 0 auto;
@@ -96,7 +86,7 @@ const actionLinks = [
   .project-layout__back {
     display: inline-block;
     margin-bottom: var(--space-8);
-    font-size: 12px;
+    font-size: var(--font-size-sm);
     font-weight: 500;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -124,7 +114,7 @@ const actionLinks = [
   }
 
   .project-layout__date {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -143,20 +133,20 @@ const actionLinks = [
   }
 
   .project-layout__title {
-    font-size: 32px;
+    font-size: var(--font-size-6xl);
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.25;
     color: var(--color-text);
     margin-bottom: var(--space-4);
 
-    @media (max-width: 767px) {
-      font-size: 24px;
+    @media (max-width: #{$bp-md - 1px}) {
+      font-size: var(--font-size-4xl);
     }
   }
 
   .project-layout__desc {
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     line-height: 1.6;
     color: var(--color-muted);
     margin-bottom: var(--space-5);
@@ -169,7 +159,7 @@ const actionLinks = [
   }
 
   .project-layout__link {
-    font-size: 12px;
+    font-size: var(--font-size-sm);
     font-weight: 500;
     letter-spacing: 0.04em;
     color: var(--color-accent);

@@ -1,0 +1,4 @@
+// SCSS-only variables injected into every .scss file via astro.config additionalData.
+// No CSS output — only compile-time values.
+$bp-sm: 480px;
+$bp-md: 768px;

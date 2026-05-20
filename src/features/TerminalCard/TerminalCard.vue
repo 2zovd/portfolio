@@ -66,7 +66,7 @@ const terminalContent = [
 
 .terminal__title {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   color: var(--color-muted);
   margin-left: var(--space-2);
 }
@@ -74,7 +74,7 @@ const terminalContent = [
 .terminal__body {
   padding: var(--space-4);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   line-height: 1.8;
   color: var(--color-text);
   white-space: pre;

@@ -48,7 +48,7 @@ import { SITE } from '@shared/config/site';
 <!-- Turnstile must load after content, not in <head> -->
 <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
-<style>
+<style lang="scss">
   .contact {
     max-width: 1100px;
     margin: 0 auto;
@@ -61,7 +61,7 @@ import { SITE } from '@shared/config/site';
     gap: var(--space-12);
     align-items: start;
 
-    @media (max-width: 767px) {
+    @media (max-width: #{$bp-md - 1px}) {
       grid-template-columns: 1fr;
       gap: var(--space-8);
     }
@@ -74,7 +74,7 @@ import { SITE } from '@shared/config/site';
   }
 
   .contact__label {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -82,19 +82,19 @@ import { SITE } from '@shared/config/site';
   }
 
   .contact__heading {
-    font-size: 40px;
+    font-size: var(--font-size-8xl);
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.15;
     color: var(--color-text);
 
-    @media (max-width: 767px) {
-      font-size: 28px;
+    @media (max-width: #{$bp-md - 1px}) {
+      font-size: var(--font-size-5xl);
     }
   }
 
   .contact__text {
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     line-height: 1.7;
     color: var(--color-muted);
     max-width: 48ch;
@@ -109,7 +109,7 @@ import { SITE } from '@shared/config/site';
   }
 
   .contact__social-link {
-    font-size: 12px;
+    font-size: var(--font-size-sm);
     font-weight: 500;
     letter-spacing: 0.04em;
     text-transform: uppercase;
