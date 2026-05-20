@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref, nextTick, onMounted, onUnmounted } from 'vue';
+import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue';
 
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string;
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
+type TurnstileState = 'loading' | 'verified' | 'error';
 type Field = 'name' | 'email' | 'message';
 
 const formState = ref<FormState>('idle');
+const turnstileState = ref<TurnstileState>('loading');
 const name = ref('');
 const email = ref('');
 const message = ref('');
@@ -21,6 +23,18 @@ const formEl = ref<HTMLFormElement | null>(null);
 const successEl = ref<HTMLElement | null>(null);
 const turnstileContainer = ref<HTMLElement | null>(null);
 
+const submitLabel = computed(() => {
+  if (formState.value === 'submitting') return 'Sending…';
+  if (turnstileState.value === 'loading') return 'Loading security check…';
+  if (turnstileState.value === 'error') return 'Security check unavailable';
+  return 'Send message';
+});
+
+const isSubmitDisabled = computed(() =>
+  formState.value === 'submitting' ||
+  turnstileState.value !== 'verified',
+);
+
 let pollTimer: ReturnType<typeof setTimeout> | undefined;
 
 onMounted(() => {
@@ -29,8 +43,18 @@ onMounted(() => {
     if (!window.turnstile) { pollTimer = setTimeout(render, 50); return; }
     turnstileWidgetId.value = window.turnstile.render(turnstileContainer.value, {
       sitekey: TURNSTILE_SITE_KEY,
-      callback: (token: string) => { turnstileToken.value = token; },
-      'expired-callback': () => { turnstileToken.value = ''; },
+      callback: (token: string) => {
+        turnstileToken.value = token;
+        turnstileState.value = 'verified';
+      },
+      'expired-callback': () => {
+        turnstileToken.value = '';
+        turnstileState.value = 'loading';
+      },
+      'error-callback': () => {
+        turnstileToken.value = '';
+        turnstileState.value = 'error';
+      },
     });
   };
   render();
@@ -263,18 +287,27 @@ async function submit(): Promise<void> {
         >
       </div>
 
-      <div
-        ref="turnstileContainer"
-        class="contact-form__turnstile"
-      />
+      <div class="contact-form__turnstile-wrap">
+        <div
+          ref="turnstileContainer"
+          class="contact-form__turnstile"
+        />
+        <p
+          v-if="turnstileState === 'error'"
+          class="contact-form__turnstile-error"
+          role="alert"
+        >
+          Security check failed. Please reload the page.
+        </p>
+      </div>
 
       <button
         class="contact-form__submit"
         type="submit"
-        :disabled="formState === 'submitting' || !turnstileToken"
+        :disabled="isSubmitDisabled"
         :aria-busy="formState === 'submitting'"
       >
-        {{ formState === 'submitting' ? 'Sending…' : 'Send message' }}
+        {{ submitLabel }}
       </button>
     </form>
   </div>
@@ -359,8 +392,19 @@ async function submit(): Promise<void> {
   white-space: nowrap;
 }
 
+.contact-form__turnstile-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
 .contact-form__turnstile {
   min-height: 65px;
+}
+
+.contact-form__turnstile-error {
+  font-size: 12px;
+  color: var(--color-accent);
 }
 
 .contact-form__error {

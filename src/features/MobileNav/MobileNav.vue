@@ -86,7 +86,10 @@ onUnmounted(() => {
       </span>
     </button>
 
-    <Teleport to="body">
+    <Teleport
+      to="body"
+      defer
+    >
       <Transition name="overlay">
         <div
           v-if="isOpen"
