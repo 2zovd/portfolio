@@ -3,6 +3,7 @@ import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
 import { SITE } from '@shared/config/site';
 
 const isOpen = ref(false);
+const isMounted = ref(false);
 const overlayRef = ref<HTMLElement | null>(null);
 const currentPath = ref('');
 
@@ -10,6 +11,7 @@ const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 onMounted(() => {
+  isMounted.value = true;
   currentPath.value = window.location.pathname;
 });
 
@@ -87,8 +89,8 @@ onUnmounted(() => {
     </button>
 
     <Teleport
+      v-if="isMounted"
       to="body"
-      defer
     >
       <Transition name="overlay">
         <div

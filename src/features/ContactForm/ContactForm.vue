@@ -60,7 +60,13 @@ onMounted(() => {
   render();
 });
 
-onUnmounted(() => { clearTimeout(pollTimer); });
+onUnmounted(() => {
+  clearTimeout(pollTimer);
+  if (turnstileWidgetId.value !== undefined && window.turnstile) {
+    window.turnstile.remove(turnstileWidgetId.value);
+    turnstileWidgetId.value = undefined;
+  }
+});
 
 function isValidEmail(value: string): boolean {
   const el = document.createElement('input');
@@ -103,6 +109,7 @@ function onInput(field: Field): void {
 
 function resetTurnstile(): void {
   turnstileToken.value = '';
+  turnstileState.value = 'loading';
   if (turnstileWidgetId.value !== undefined && window.turnstile) {
     window.turnstile.reset(turnstileWidgetId.value);
   }

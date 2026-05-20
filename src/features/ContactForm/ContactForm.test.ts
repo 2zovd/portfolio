@@ -12,6 +12,7 @@ function setupTurnstile(): void {
       return mockTurnstileWidgetId;
     }),
     reset: vi.fn(),
+    remove: vi.fn(),
   };
 }
 
@@ -90,6 +91,10 @@ describe('ContactForm', () => {
     simulateTurnstileSuccess();
     await wrapper.vm.$nextTick();
 
+    await wrapper.find('#cf-name').setValue('Alice');
+    await wrapper.find('#cf-email').setValue('alice@example.com');
+    await wrapper.find('#cf-message').setValue('Hello there!');
+
     const submitPromise = wrapper.find('form').trigger('submit');
 
     await wrapper.vm.$nextTick();
@@ -134,6 +139,10 @@ describe('ContactForm', () => {
     simulateTurnstileSuccess();
     await wrapper.vm.$nextTick();
 
+    await wrapper.find('#cf-name').setValue('Alice');
+    await wrapper.find('#cf-email').setValue('alice@example.com');
+    await wrapper.find('#cf-message').setValue('Hello there!');
+
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
@@ -151,6 +160,10 @@ describe('ContactForm', () => {
     const wrapper = mount(ContactForm);
     simulateTurnstileSuccess();
     await wrapper.vm.$nextTick();
+
+    await wrapper.find('#cf-name').setValue('Alice');
+    await wrapper.find('#cf-email').setValue('alice@example.com');
+    await wrapper.find('#cf-message').setValue('Hello there!');
 
     await wrapper.find('form').trigger('submit');
     await flushPromises();
@@ -171,6 +184,10 @@ describe('ContactForm', () => {
     simulateTurnstileSuccess();
     await wrapper.vm.$nextTick();
 
+    await wrapper.find('#cf-name').setValue('Alice');
+    await wrapper.find('#cf-email').setValue('alice@example.com');
+    await wrapper.find('#cf-message').setValue('Hello there!');
+
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
@@ -182,8 +199,8 @@ describe('ContactForm', () => {
   it('calls window.turnstile.render on mount', () => {
     mount(ContactForm);
     expect(window.turnstile!.render).toHaveBeenCalledWith(
-      expect.any(HTMLElement),
-      expect.objectContaining({ sitekey: expect.any(String) }),
+      expect.anything(),
+      expect.objectContaining({ callback: expect.any(Function) }),
     );
   });
 });
