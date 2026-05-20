@@ -14,7 +14,7 @@ const stack = [
 ---
 
 <section class={styles.hero} aria-labelledby="hero-heading">
-  <HeroCanvas client:load />
+  <HeroCanvas client:idle />
   <div class={styles.hero__grid}>
 
     <!-- Left column -->
@@ -24,6 +24,8 @@ const stack = [
           src={photo}
           alt="Dmytro Tuzov — Frontend Engineer"
           class={styles.hero__photo}
+          width={240}
+          height={240}
           loading="eager"
           fetchpriority="high"
         />
@@ -80,7 +82,7 @@ const stack = [
 
       <!-- Contact / availability card -->
       <div class={styles.contact}>
-        <TimeDisplay client:load />
+        <TimeDisplay client:idle />
         <a href="/contact" class={styles.contact__email}>
           Get in touch
         </a>
