@@ -112,8 +112,16 @@ const stack = [
       wrap.appendChild(canvas);
 
       const ctx = canvas.getContext('2d');
-      if (!ctx) return null;
+      if (!ctx) { canvas.remove(); return null; }
       const renderCtx: CanvasRenderingContext2D = ctx;
+
+      // destroyed flag stops all async activity after cleanup() is called
+      let destroyed = false;
+
+      // Offscreen canvases are built lazily on first drawFrame call so the
+      // image pixel data is guaranteed to be decoded at that point.
+      let gc: HTMLCanvasElement | null = null;
+      let cc: HTMLCanvasElement | null = null;
 
       function makeOffscreen(filter: string): HTMLCanvasElement | null {
         const c = document.createElement('canvas');
@@ -125,11 +133,12 @@ const stack = [
         return c;
       }
 
-      const grayCanvas = makeOffscreen('grayscale(1) contrast(1.05)');
-      const colorCanvas = makeOffscreen('contrast(1.05)');
-      if (!grayCanvas || !colorCanvas) return null;
-      const gc: HTMLCanvasElement = grayCanvas;
-      const cc: HTMLCanvasElement = colorCanvas;
+      function setupOffscreen(): boolean {
+        if (gc && cc) return true;
+        gc = makeOffscreen('grayscale(1) contrast(1.05)');
+        cc = makeOffscreen('contrast(1.05)');
+        return !!(gc && cc);
+      }
 
       interface Band { start: number; end: number; isNoise: boolean; }
 
@@ -165,7 +174,8 @@ const stack = [
       }
 
       function drawFrame(colored: boolean) {
-        const src = colored ? cc : gc;
+        if (!setupOffscreen()) return;
+        const src = colored ? cc! : gc!;
         const { d, bands } = makeDisplacements();
         const bg = getComputedStyle(document.documentElement)
           .getPropertyValue('--color-bg').trim() || '#0c0c0a';
@@ -193,11 +203,13 @@ const stack = [
       let scheduleTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
       function runBurst() {
+        if (destroyed) return;
         let i = 0;
         canvas.style.opacity = '1';
         imgEl.style.opacity = '0';
         drawFrame(false);
         burstIntervalId = setInterval(() => {
+          if (destroyed) { clearInterval(burstIntervalId!); burstIntervalId = null; return; }
           drawFrame(false);
           if (++i >= 6) {
             if (burstIntervalId !== null) { clearInterval(burstIntervalId); burstIntervalId = null; }
@@ -210,6 +222,7 @@ const stack = [
       }
 
       function scheduleNext() {
+        if (destroyed) return;
         scheduleTimeoutId = setTimeout(() => {
           if (!hovered) runBurst();
           scheduleNext();
@@ -217,11 +230,15 @@ const stack = [
       }
 
       function onEnter() {
+        if (destroyed) return;
         hovered = true;
         canvas.style.opacity = '1';
         imgEl.style.opacity = '0';
         drawFrame(true);
-        hoverTimerId = setInterval(() => drawFrame(true), 80);
+        hoverTimerId = setInterval(() => {
+          if (destroyed) { clearInterval(hoverTimerId!); hoverTimerId = null; return; }
+          drawFrame(true);
+        }, 80);
       }
 
       function onLeave() {
@@ -234,13 +251,20 @@ const stack = [
       wrap.addEventListener('mouseenter', onEnter);
       wrap.addEventListener('mouseleave', onLeave);
 
-      if (imgEl.complete) {
+      function start() {
+        if (destroyed) return;
+        scheduleNext();
+      }
+
+      // naturalWidth > 0 ensures the image actually has pixel data decoded
+      if (imgEl.complete && imgEl.naturalWidth > 0) {
         scheduleNext();
       } else {
-        imgEl.addEventListener('load', scheduleNext, { once: true });
+        imgEl.addEventListener('load', start, { once: true });
       }
 
       return () => {
+        destroyed = true;
         if (hoverTimerId !== null) { clearInterval(hoverTimerId); hoverTimerId = null; }
         if (burstIntervalId !== null) { clearInterval(burstIntervalId); burstIntervalId = null; }
         if (scheduleTimeoutId !== null) { clearTimeout(scheduleTimeoutId); scheduleTimeoutId = null; }

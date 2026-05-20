@@ -1,0 +1,62 @@
+---
+interface Props {
+  size?: number;   // height of the rotating bar in px, default 22
+  class?: string;
+}
+
+const { size = 22, class: className } = Astro.props;
+---
+
+<!--
+  Line spinner ("bar spinner") — a single thin rectangle that rotates around
+  its center, creating a propeller / clock-hand effect.
+
+  Usage:
+    <LineSpinner />                        — default 22px bar
+    <LineSpinner size={16} />             — smaller bar
+    <LineSpinner class="my-loader" />     — custom positioning via parent class
+
+  The parent is responsible for show/hide (opacity / display / v-show).
+  Color comes from --canvas-particle token; swap via CSS custom property
+  override on the parent if needed.
+-->
+<span
+  class:list={['line-spinner', className]}
+  aria-hidden="true"
+  style={`--_bar-h: ${size}px`}
+/>
+
+<style>
+  @keyframes spin-line {
+    to { transform: rotate(360deg); }
+  }
+
+  .line-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .line-spinner::before {
+    content: '';
+    display: block;
+    width: 1.5px;
+    height: var(--_bar-h, 22px);
+    /* Fades at both ends — gives the glowing propeller-blade look */
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--canvas-particle),
+      transparent
+    );
+    animation: spin-line 0.9s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .line-spinner::before {
+      animation: none;
+      opacity: 0;
+    }
+  }
+</style>

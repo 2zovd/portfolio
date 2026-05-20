@@ -28,6 +28,8 @@ let w = 0;
 let h = 0;
 let rafId = 0;
 const mouse = { x: -9999, y: -9999 };
+let resizeObserver: ResizeObserver | null = null;
+let mutationObserver: MutationObserver | null = null;
 
 function readColors(): void {
   const style = getComputedStyle(document.documentElement);
@@ -134,6 +136,18 @@ function loop(): void {
   rafId = requestAnimationFrame(loop);
 }
 
+function onMouseMove(e: MouseEvent): void {
+  if (!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = e.clientX - rect.left;
+  mouse.y = e.clientY - rect.top;
+}
+
+function onMouseLeave(): void {
+  mouse.x = -9999;
+  mouse.y = -9999;
+}
+
 onMounted(() => {
   canvas = document.querySelector<HTMLCanvasElement>('.hero-canvas');
   if (!canvas) return;
@@ -145,23 +159,11 @@ onMounted(() => {
   resize();
   loop();
 
-  const onMouseMove = (e: MouseEvent): void => {
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    mouse.x = e.clientX - rect.left;
-    mouse.y = e.clientY - rect.top;
-  };
-
-  const onMouseLeave = (): void => {
-    mouse.x = -9999;
-    mouse.y = -9999;
-  };
-
-  const resizeObserver = new ResizeObserver(resize);
+  resizeObserver = new ResizeObserver(resize);
   const section = canvas.closest('section');
   if (section) resizeObserver.observe(section);
 
-  const mutationObserver = new MutationObserver(readColors);
+  mutationObserver = new MutationObserver(readColors);
   mutationObserver.observe(document.documentElement, {
     attributes: true,
     attributeFilter: ['class'],
@@ -169,14 +171,14 @@ onMounted(() => {
 
   window.addEventListener('mousemove', onMouseMove);
   window.addEventListener('mouseleave', onMouseLeave);
+});
 
-  onUnmounted(() => {
-    cancelAnimationFrame(rafId);
-    window.removeEventListener('mousemove', onMouseMove);
-    window.removeEventListener('mouseleave', onMouseLeave);
-    resizeObserver.disconnect();
-    mutationObserver.disconnect();
-  });
+onUnmounted(() => {
+  cancelAnimationFrame(rafId);
+  window.removeEventListener('mousemove', onMouseMove);
+  window.removeEventListener('mouseleave', onMouseLeave);
+  resizeObserver?.disconnect();
+  mutationObserver?.disconnect();
 });
 </script>
 
