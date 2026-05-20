@@ -37,5 +37,3 @@ onUnmounted(() => {
   timeouts.forEach(clearTimeout);
 });
 </script>
-
-<template><!-- renderless component --></template>
