@@ -1,21 +1,18 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
+import { SITE } from '@shared/config/site';
 
-const DMYTRO_TZ = 'Europe/Podgorica';
+const DMYTRO_TZ = SITE.workHours.timezone;
+const { start, end, days } = SITE.workHours;
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
 
 const dmytroTime = ref('');
 const visitorTime = ref('');
 const diffLabel = ref('');
 const mounted = ref(false);
-
-function isWorkingHour(now: Date): boolean {
-  const local = new Date(now.toLocaleString('en-US', { timeZone: DMYTRO_TZ }));
-  const day = local.getDay();
-  const hour = local.getHours();
-  return day >= 1 && day <= 5 && hour >= 9 && hour < 18;
-}
-
-const isOnline = ref(isWorkingHour(new Date()));
+const isOnline = ref(false);
+const progressPercent = ref(0);
+const workSuffix = ref('');
 
 let timer: ReturnType<typeof setInterval> | undefined;
 
@@ -34,10 +31,35 @@ function getOffsetHours(date: Date, tz: string): number {
   return Math.round((tzMs - utcMs) / 3_600_000);
 }
 
+function computeWorkHours(now: Date): void {
+  const local = new Date(now.toLocaleString('en-US', { timeZone: DMYTRO_TZ }));
+  const day = local.getDay();
+  const h = local.getHours();
+  const m = local.getMinutes();
+  const nowMin = h * 60 + m;
+  const startMin = start * 60;
+  const endMin = end * 60;
+  const online = day >= days[0] && day <= days[1] && nowMin >= startMin && nowMin < endMin;
+
+  isOnline.value = online;
+
+  if (online) {
+    progressPercent.value = Math.round(((nowMin - startMin) / (endMin - startMin)) * 100);
+    const remMin = endMin - nowMin;
+    const rh = Math.floor(remMin / 60);
+    const rm = remMin % 60;
+    workSuffix.value = rh > 0 ? `· ${rh}h ${rm}m left` : `· ${rm}m left`;
+  } else {
+    progressPercent.value = 0;
+    const nextDay = day < days[0] || day > days[1] ? DAY_NAMES[days[0]] : DAY_NAMES[(day % 7) + 1];
+    workSuffix.value = `· back ${nextDay} ${String(start).padStart(2, '0')}:00`;
+  }
+}
+
 function tick(): void {
   const now = new Date();
   dmytroTime.value = formatHHMM(now, DMYTRO_TZ);
-  isOnline.value = isWorkingHour(now);
+  computeWorkHours(now);
 
   try {
     const visitorTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -86,6 +108,20 @@ onUnmounted(() => {
         aria-hidden="true"
       />
       <span>{{ isOnline ? 'Online' : 'Offline' }}</span>
+      <span
+        v-if="mounted"
+        class="time-display__suffix"
+      >{{ workSuffix }}</span>
+    </span>
+    <span
+      class="time-display__progress"
+      role="presentation"
+      aria-hidden="true"
+    >
+      <span
+        class="time-display__progress-fill"
+        :style="{ width: progressPercent + '%' }"
+      />
     </span>
     <span class="time-display__row">
       <span class="time-display__time">{{ mounted ? dmytroTime : '&ndash;&ndash;:&ndash;&ndash;' }}</span>
@@ -110,6 +146,66 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.time-display__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.time-display__status--online  { color: var(--color-status-available); }
+.time-display__status--offline { color: var(--color-muted); }
+
+.time-display__suffix {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.time-display__progress {
+  display: block;
+  height: 2px;
+  background-color: var(--color-border);
+  margin-block: 2px;
+}
+
+.time-display__progress-fill {
+  display: block;
+  height: 100%;
+  background-color: var(--color-accent);
+  transition: width var(--transition-slow) var(--ease-out-expo);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.time-display__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.time-display__dot--online {
+  background-color: var(--color-status-available);
+  animation: pulse 2s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.time-display__dot--offline {
+  background-color: var(--color-muted);
 }
 
 .time-display__row {
@@ -141,42 +237,6 @@ onUnmounted(() => {
   gap: var(--space-2);
   font-size: 12px;
   color: var(--color-muted);
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
-}
-
-.time-display__status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.time-display__status--online  { color: var(--color-status-available); }
-.time-display__status--offline { color: var(--color-muted); }
-
-.time-display__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.time-display__dot--online {
-  background-color: var(--color-status-available);
-  animation: pulse 2s ease-in-out infinite;
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-}
-
-.time-display__dot--offline {
-  background-color: var(--color-muted);
 }
 
 .time-display__diff {

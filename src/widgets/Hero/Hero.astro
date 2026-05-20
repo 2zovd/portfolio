@@ -1,22 +1,32 @@
 ---
-import { Image } from 'astro:assets';
-import { SITE } from '@shared/config/site';
-import { TimeDisplay } from '@features/TimeDisplay';
-import { HeroCanvas } from '@features/HeroCanvas';
-import photo from '../../assets/photo.png';
-import styles from './Hero.module.scss';
+import { Image } from "astro:assets";
+import { SITE } from "@shared/config/site";
+import { TimeDisplay } from "@features/TimeDisplay";
+import { HeroCanvas } from "@features/HeroCanvas";
+import { TerminalCard } from "@features/TerminalCard";
+import photo from "../../assets/photo.png";
+import styles from "./Hero.module.scss";
 
-const tags = ['Vue 3', 'TypeScript', 'Fintech', 'Microfrontends'];
+const tags = ["Vue 3", "TypeScript", "Fintech", "Microfrontends"];
 const stack = [
-  'JavaScript', 'TypeScript', 'Vue 3', 'Pinia', 'Vuex', 'Astro',
-  'Backbone.js', 'Vite', 'Webpack', 'SCSS', 'Vitest', 'Cordova',
+  "JavaScript",
+  "TypeScript",
+  "Vue 3",
+  "Pinia",
+  "Vuex",
+  "Astro",
+  "Backbone.js",
+  "Vite",
+  "Webpack",
+  "SCSS",
+  "Vitest",
+  "Cordova",
 ];
 ---
 
 <section class={styles.hero} aria-labelledby="hero-heading">
   <HeroCanvas client:idle />
   <div class={styles.hero__grid}>
-
     <!-- Left column -->
     <div class={styles.hero__left}>
       <div class={styles.hero__photo_wrap} data-hero-photo-wrap>
@@ -40,16 +50,17 @@ const stack = [
       </h1>
 
       <p class={styles.description}>
-        Frontend Engineer specialising in hybrid legacy/modern architectures for fintech
-        trading platforms. 7+ years shipping production features in Vue 3, TypeScript, and
-        Backbone.js stacks — serving 3M+ users across 120+ countries.
+        Frontend Engineer specialising in hybrid legacy/modern architectures for
+        fintech trading platforms. 7+ years shipping production features in Vue
+        3, TypeScript, and Backbone.js stacks — serving 3M+ users across 120+
+        countries.
       </p>
 
       <div class={styles.cta}>
-        <a href="/portfolio" class={`${styles.btn} ${styles['btn--primary']}`}>
+        <a href="/portfolio" class={`${styles.btn} ${styles["btn--primary"]}`}>
           View Work
         </a>
-        <a href="/contact" class={`${styles.btn} ${styles['btn--secondary']}`}>
+        <a href="/contact" class={`${styles.btn} ${styles["btn--secondary"]}`}>
           Get in touch
         </a>
       </div>
@@ -58,34 +69,12 @@ const stack = [
     <!-- Right column -->
     <div class={styles.hero__right}>
       <!-- Terminal card -->
-      <div class={styles.terminal} aria-label="Terminal output">
-        <div class={styles.terminal__bar}>
-          <span class={styles.terminal__dot} aria-hidden="true" />
-          <span class={styles.terminal__dot} aria-hidden="true" />
-          <span class={styles.terminal__dot} aria-hidden="true" />
-          <span class={styles.terminal__title}>dmytro@dev:~</span>
-        </div>
-        <pre class={styles.terminal__body} aria-label="About me in terminal format"><code><span class={styles.terminal__prompt}>$</span> whoami
-<span class={styles.terminal__value}>{SITE.name}</span>
-
-<span class={styles.terminal__prompt}>$</span> location
-<span class={styles.terminal__value}>{SITE.location}</span>
-
-<span class={styles.terminal__prompt}>$</span> experience
-<span class={styles.terminal__value}>7+ years · fintech</span>
-
-<span class={styles.terminal__prompt}>$</span> stack
-<span class={styles.terminal__value}>Vue 3 · TypeScript · Astro</span>
-
-<span class={styles.terminal__prompt}>$</span> <span class={styles.terminal__cursor} aria-hidden="true" /></code></pre>
-      </div>
+      <TerminalCard client:idle />
 
       <!-- Contact / availability card -->
       <div class={styles.contact}>
         <TimeDisplay client:idle />
-        <a href="/contact" class={styles.contact__email}>
-          Get in touch
-        </a>
+        <a href="/contact" class={styles.contact__email}> Get in touch </a>
       </div>
     </div>
   </div>
@@ -96,25 +85,36 @@ const stack = [
     let cleanup: (() => void) | null = null;
 
     function init(): (() => void) | null {
-      const wrap = document.querySelector('[data-hero-photo-wrap]');
-      if (!wrap || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
+      const wrap = document.querySelector("[data-hero-photo-wrap]");
+      if (
+        !wrap ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      )
+        return null;
 
-      const img = wrap.querySelector<HTMLImageElement>('img');
+      const img = wrap.querySelector<HTMLImageElement>("img");
       if (!img) return null;
       const imgEl: HTMLImageElement = img;
 
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = 120;
       canvas.height = 120;
       Object.assign(canvas.style, {
-        position: 'absolute', top: '0', left: '0',
-        width: '120px', height: '120px',
-        pointerEvents: 'none', opacity: '0',
+        position: "absolute",
+        top: "0",
+        left: "0",
+        width: "120px",
+        height: "120px",
+        pointerEvents: "none",
+        opacity: "0",
       });
       wrap.appendChild(canvas);
 
-      const ctx = canvas.getContext('2d');
-      if (!ctx) { canvas.remove(); return null; }
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        canvas.remove();
+        return null;
+      }
       const renderCtx: CanvasRenderingContext2D = ctx;
 
       // destroyed flag stops all async activity after cleanup() is called
@@ -126,9 +126,10 @@ const stack = [
       let cc: HTMLCanvasElement | null = null;
 
       function makeOffscreen(filter: string): HTMLCanvasElement | null {
-        const c = document.createElement('canvas');
-        c.width = 120; c.height = 120;
-        const cx = c.getContext('2d');
+        const c = document.createElement("canvas");
+        c.width = 120;
+        c.height = 120;
+        const cx = c.getContext("2d");
         if (!cx) return null;
         cx.filter = filter;
         cx.drawImage(imgEl, 0, 0, 120, 120);
@@ -137,12 +138,16 @@ const stack = [
 
       function setupOffscreen(): boolean {
         if (gc && cc) return true;
-        gc = makeOffscreen('grayscale(1) contrast(1.05)');
-        cc = makeOffscreen('contrast(1.05)');
+        gc = makeOffscreen("grayscale(1) contrast(1.05)");
+        cc = makeOffscreen("contrast(1.05)");
         return !!(gc && cc);
       }
 
-      interface Band { start: number; end: number; isNoise: boolean; }
+      interface Band {
+        start: number;
+        end: number;
+        isNoise: boolean;
+      }
 
       function makeDisplacements(): { d: Int16Array; bands: Band[] } {
         const raw = new Float32Array(120);
@@ -162,7 +167,8 @@ const stack = [
 
         // Sparse micro-jitter on non-band rows
         for (let y = 0; y < 120; y++) {
-          if (raw[y]! === 0 && Math.random() < 0.05) raw[y] = (Math.random() - 0.5) * 6;
+          if (raw[y]! === 0 && Math.random() < 0.05)
+            raw[y] = (Math.random() - 0.5) * 6;
         }
 
         // Normalize to zero sum — guarantees no net image shift
@@ -179,10 +185,12 @@ const stack = [
         if (!setupOffscreen()) return;
         const src = colored ? cc! : gc!;
         const { d, bands } = makeDisplacements();
-        const bg = getComputedStyle(document.documentElement)
-          .getPropertyValue('--color-bg').trim() || '#0c0c0a';
+        const bg =
+          getComputedStyle(document.documentElement)
+            .getPropertyValue("--color-bg")
+            .trim() || "#0c0c0a";
 
-        renderCtx.filter = 'none';
+        renderCtx.filter = "none";
         renderCtx.fillStyle = bg;
         renderCtx.fillRect(0, 0, 120, 120);
 
@@ -207,17 +215,24 @@ const stack = [
       function runBurst() {
         if (destroyed) return;
         let i = 0;
-        canvas.style.opacity = '1';
-        imgEl.style.opacity = '0';
+        canvas.style.opacity = "1";
+        imgEl.style.opacity = "0";
         drawFrame(false);
         burstIntervalId = setInterval(() => {
-          if (destroyed) { clearInterval(burstIntervalId!); burstIntervalId = null; return; }
+          if (destroyed) {
+            clearInterval(burstIntervalId!);
+            burstIntervalId = null;
+            return;
+          }
           drawFrame(false);
           if (++i >= 6) {
-            if (burstIntervalId !== null) { clearInterval(burstIntervalId); burstIntervalId = null; }
+            if (burstIntervalId !== null) {
+              clearInterval(burstIntervalId);
+              burstIntervalId = null;
+            }
             if (!hovered) {
-              canvas.style.opacity = '0';
-              imgEl.style.opacity = '1';
+              canvas.style.opacity = "0";
+              imgEl.style.opacity = "1";
             }
           }
         }, 50);
@@ -225,33 +240,43 @@ const stack = [
 
       function scheduleNext() {
         if (destroyed) return;
-        scheduleTimeoutId = setTimeout(() => {
-          if (!hovered) runBurst();
-          scheduleNext();
-        }, 1000 + Math.random() * 4000);
+        scheduleTimeoutId = setTimeout(
+          () => {
+            if (!hovered) runBurst();
+            scheduleNext();
+          },
+          1000 + Math.random() * 4000,
+        );
       }
 
       function onEnter() {
         if (destroyed) return;
         hovered = true;
-        canvas.style.opacity = '1';
-        imgEl.style.opacity = '0';
+        canvas.style.opacity = "1";
+        imgEl.style.opacity = "0";
         drawFrame(true);
         hoverTimerId = setInterval(() => {
-          if (destroyed) { clearInterval(hoverTimerId!); hoverTimerId = null; return; }
+          if (destroyed) {
+            clearInterval(hoverTimerId!);
+            hoverTimerId = null;
+            return;
+          }
           drawFrame(true);
         }, 80);
       }
 
       function onLeave() {
         hovered = false;
-        if (hoverTimerId !== null) { clearInterval(hoverTimerId); hoverTimerId = null; }
-        canvas.style.opacity = '0';
-        imgEl.style.opacity = '1';
+        if (hoverTimerId !== null) {
+          clearInterval(hoverTimerId);
+          hoverTimerId = null;
+        }
+        canvas.style.opacity = "0";
+        imgEl.style.opacity = "1";
       }
 
-      wrap.addEventListener('mouseenter', onEnter);
-      wrap.addEventListener('mouseleave', onLeave);
+      wrap.addEventListener("mouseenter", onEnter);
+      wrap.addEventListener("mouseleave", onLeave);
 
       function start() {
         if (destroyed) return;
@@ -262,24 +287,38 @@ const stack = [
       if (imgEl.complete && imgEl.naturalWidth > 0) {
         scheduleNext();
       } else {
-        imgEl.addEventListener('load', start, { once: true });
+        imgEl.addEventListener("load", start, { once: true });
       }
 
       return () => {
         destroyed = true;
-        if (hoverTimerId !== null) { clearInterval(hoverTimerId); hoverTimerId = null; }
-        if (burstIntervalId !== null) { clearInterval(burstIntervalId); burstIntervalId = null; }
-        if (scheduleTimeoutId !== null) { clearTimeout(scheduleTimeoutId); scheduleTimeoutId = null; }
-        wrap.removeEventListener('mouseenter', onEnter);
-        wrap.removeEventListener('mouseleave', onLeave);
+        if (hoverTimerId !== null) {
+          clearInterval(hoverTimerId);
+          hoverTimerId = null;
+        }
+        if (burstIntervalId !== null) {
+          clearInterval(burstIntervalId);
+          burstIntervalId = null;
+        }
+        if (scheduleTimeoutId !== null) {
+          clearTimeout(scheduleTimeoutId);
+          scheduleTimeoutId = null;
+        }
+        wrap.removeEventListener("mouseenter", onEnter);
+        wrap.removeEventListener("mouseleave", onLeave);
         canvas.remove();
-        imgEl.style.opacity = '1';
+        imgEl.style.opacity = "1";
       };
     }
 
-    document.addEventListener('astro:page-load', () => { cleanup = init(); });
-    document.addEventListener('astro:before-swap', () => { cleanup?.(); cleanup = null; });
-  }());
+    document.addEventListener("astro:page-load", () => {
+      cleanup = init();
+    });
+    document.addEventListener("astro:before-swap", () => {
+      cleanup?.();
+      cleanup = null;
+    });
+  })();
 </script>
 
 <!-- Stack bar -->
