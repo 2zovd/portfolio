@@ -104,6 +104,33 @@ const UNSAFE_OUTPUT_PATTERNS: RegExp[] = [
 
 const UNSAFE_OUTPUT_RESPONSE = "I can only talk about my own work and experience.";
 
+// Allowlist: topics that are on-topic for a professional bio terminal.
+// If NONE of these match, the question is redirected without calling the LLM.
+const ON_TOPIC_PATTERNS: RegExp[] = [
+  // Tech stack & tools
+  /\bvue\b/i, /\btypescript\b/i, /\bjavascript\b/i, /\bjs\b/i,
+  /\bfrontend\b/i, /\bfront.end\b/i, /\bastro\b/i, /\bcss\b/i,
+  /\bhtml\b/i, /\bnode\b/i, /\bframework\b/i, /\bstack\b/i,
+  /\btech\b/i, /\bcod(e|ing)\b/i, /\bprogramming\b/i, /\bdevelop/i,
+  /\btest(ing)?\b/i, /\bperformance\b/i, /\barchitecture\b/i,
+  // Career & experience
+  /\bexperience\b/i, /\bcareer\b/i, /\bskill/i, /\bbackground\b/i,
+  /\bwork(ed|ing)?\b/i, /\bjob\b/i, /\brole\b/i, /\bprofession/i,
+  /\bfintech\b/i, /\btrading\b/i, /\byears?\b/i,
+  // Projects & portfolio
+  /\bproject/i, /\bportfolio\b/i, /\bbuilt?\b/i, /\bship(ped)?\b/i,
+  // Availability & hire
+  /\bfreelance\b/i, /\bhire\b/i, /\bavailabl/i, /\bopportunit/i,
+  /\bcontract\b/i, /\bcollaborat/i, /\bopen to\b/i,
+  // Generic about-me conversation
+  /\bwho are you\b/i, /\bwhat do you do\b/i, /\btell me\b/i,
+  /\babout (you|yourself)\b/i, /\bintroduce\b/i, /\bdmytro\b/i,
+  /\bhello\b/i, /\bhi\b/i, /\bhey\b/i, /\bhow are you\b/i,
+];
+
+const OFF_TOPIC_RESPONSE =
+  "That's outside what I talk about here — but I'd love to connect directly.";
+
 const MAX_QUESTION_LENGTH = 200;
 const RATE_LIMIT_MAX = 10;
 const RATE_LIMIT_WINDOW_SEC = 600; // 10 minutes
@@ -158,6 +185,10 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (PROFANITY_PATTERNS.some((p) => p.test(question))) {
     return json({ answer: PROFANITY_RESPONSE, contact: false }, 200);
+  }
+
+  if (!ON_TOPIC_PATTERNS.some((p) => p.test(question))) {
+    return json({ answer: OFF_TOPIC_RESPONSE, contact: true }, 200);
   }
 
   // Rate limiting via Cloudflare KV (fail-open: if KV unavailable, allow request)
