@@ -1,0 +1,5 @@
+name = "dmytrotuzov-portfolio"
+compatibility_date = "2026-04-15"
+
+[ai]
+binding = "AI"
