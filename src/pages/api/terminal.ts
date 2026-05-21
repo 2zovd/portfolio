@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { env as cfEnv } from 'cloudflare:workers';
 
 export const prerender = false;
 
@@ -35,8 +36,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return json({ error: 'empty question' }, 400);
   }
 
-  const runtime = locals.runtime as { env?: Record<string, unknown> } | undefined;
-  const ai = runtime?.env?.['AI'] as AiBinding | undefined;
+  // Prefer cloudflare:workers (new @cloudflare/vite-plugin approach),
+  // fall back to locals.runtime.env (legacy adapter path)
+  const ai =
+    (cfEnv['AI'] as AiBinding | undefined) ??
+    (locals.runtime?.env?.['AI'] as AiBinding | undefined);
 
   if (!ai) {
     return json({ error: 'AI not available' }, 503);
@@ -52,7 +56,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
 
     return json({ answer: result.response }, 200);
-  } catch {
+  } catch (err) {
+    console.error('[terminal/ai]', err);
     return json({ error: 'AI request failed' }, 500);
   }
 };

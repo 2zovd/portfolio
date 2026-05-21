@@ -33,7 +33,6 @@ export const COMMANDS: Record<string, () => CommandResult> = {
   help: () => ({
     type: 'info',
     output: [
-      '  git log       — career in commits',
       '  uptime        — time in the field',
       '  man dmytro    — the manual page',
       '  fortune       — engineering wisdom',
@@ -42,20 +41,6 @@ export const COMMANDS: Record<string, () => CommandResult> = {
       '  interview     — apply for a role',
       '  ask [q]       — ask me anything',
       '  clear         — reset terminal',
-    ].join('\n'),
-  }),
-
-  'git log': () => ({
-    type: 'info',
-    output: [
-      '  7f3a912 fix: resolved imposter syndrome (recurring)',
-      '  4d8b231 feat: shipped AI-powered trading feature (7M+ users)',
-      '  2c6e440 refactor: backbone.js → vue 3 microfrontends (ongoing)',
-      '  a9f1b38 feat: joined libertex group as frontend engineer',
-      '  8e5d429 perf: eliminated 99% of runtime errors with typescript strict',
-      '  3b7a615 feat: shipped first production vue 3 app',
-      '  1c4d882 chore: moved to fully remote',
-      '  b9e2d71 init: wrote first line of frontend code professionally',
     ].join('\n'),
   }),
 

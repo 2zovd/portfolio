@@ -3,9 +3,14 @@
 declare namespace App {
   interface Locals {
     runtime?: {
-      env: Record<string, unknown>;
+      env?: Record<string, unknown>;
     };
   }
+}
+
+declare module 'cloudflare:workers' {
+  const env: Record<string, unknown>;
+  export { env };
 }
 
 interface ImportMetaEnv {

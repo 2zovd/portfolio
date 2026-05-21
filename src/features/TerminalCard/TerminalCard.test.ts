@@ -78,17 +78,9 @@ describe('TerminalCard — commands', () => {
     const wrapper = await mountInteractive();
     await runCmd(wrapper, 'help');
     const text = wrapper.text();
-    expect(text).toContain('git log');
     expect(text).toContain('uptime');
     expect(text).toContain('interview');
     expect(text).toContain('ask');
-  });
-
-  it('executes git log and shows career commits', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'git log');
-    expect(wrapper.text()).toContain('7M+ users');
-    expect(wrapper.text()).toContain('imposter syndrome');
   });
 
   it('executes uptime and shows developer uptime', async () => {
