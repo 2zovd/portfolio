@@ -104,6 +104,17 @@ export function useTerminalSession(scrollToBottom: () => void) {
         return;
       }
 
+      if (question.length > 200) {
+        outputHistory.value.push({
+          command: raw,
+          output: '  question too long (max 200 chars)',
+          type: 'error',
+        });
+        await nextTick();
+        scrollToBottom();
+        return;
+      }
+
       if (raw !== cmdHistory.value[0]) cmdHistory.value.unshift(raw);
 
       const idx = outputHistory.value.length;
@@ -117,13 +128,21 @@ export function useTerminalSession(scrollToBottom: () => void) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question }),
         });
-        if (!res.ok) throw new Error(`status ${res.status}`);
-        const data = (await res.json()) as { answer: string };
-        outputHistory.value[idx] = {
-          command: raw,
-          output: `  ${data.answer}`,
-          type: 'info',
-        };
+
+        let output: string;
+        let type: 'info' | 'error';
+        if (res.status === 429) {
+          output = '  rate limit reached. try again in a few minutes.';
+          type = 'error';
+        } else if (!res.ok) {
+          output = '  connection error. try again later.';
+          type = 'error';
+        } else {
+          const data = (await res.json()) as { answer: string };
+          output = `  ${data.answer}`;
+          type = 'info';
+        }
+        outputHistory.value[idx] = { command: raw, output, type };
       } catch {
         outputHistory.value[idx] = {
           command: raw,

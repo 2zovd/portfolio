@@ -211,11 +211,22 @@ describe('TerminalCard — ask command', () => {
     expect(wrapper.find('.terminal__output--error').exists()).toBe(true);
   });
 
+  it('shows error when question exceeds 200 chars without fetching', async () => {
+    const mockFetch = vi.fn();
+    vi.stubGlobal('fetch', mockFetch);
+    const wrapper = await mountInteractive();
+    await runCmd(wrapper, `ask ${'x'.repeat(201)}`);
+    await flushPromises();
+    expect(wrapper.text()).toContain('question too long');
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
   it('shows thinking then AI response on success', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValueOnce({
         ok: true,
+        status: 200,
         json: async () => ({ answer: 'I love Vue 3 and fintech.' }),
       }),
     );
@@ -225,6 +236,24 @@ describe('TerminalCard — ask command', () => {
     await flushPromises();
 
     expect(wrapper.text()).toContain('I love Vue 3 and fintech.');
+  });
+
+  it('shows rate limit message on 429 response', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        json: async () => ({ error: 'rate limit: try again in a few minutes' }),
+      }),
+    );
+
+    const wrapper = await mountInteractive();
+    await runCmd(wrapper, 'ask anything');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('rate limit reached');
+    expect(wrapper.find('.terminal__output--error').exists()).toBe(true);
   });
 
   it('shows connection error on fetch failure', async () => {
