@@ -1,5 +1,10 @@
 import { ref, nextTick } from 'vue';
 
+interface ApiResponse {
+  answer: string;
+  contact?: boolean;
+}
+
 export type HistoryEntry = {
   command?: string;
   output: string;
@@ -108,7 +113,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
         output = 'connection error. try again later.';
         type = 'error';
       } else {
-        const data = (await res.json()) as { answer: string; contact?: boolean };
+        const data = (await res.json()) as ApiResponse;
         output = data.answer;
         type = 'info';
         if (data.contact) contactLink = '/contact';

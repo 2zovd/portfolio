@@ -10,6 +10,17 @@ async function mountInteractive() {
   return wrapper;
 }
 
+function mockFetch(status: number, body: unknown) {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValueOnce({
+      ok: status < 400,
+      status,
+      json: async () => body,
+    }),
+  );
+}
+
 async function runCmd(wrapper: Awaited<ReturnType<typeof mountInteractive>>, cmd: string) {
   const input = wrapper.find('.terminal__input');
   await input.setValue(cmd);
@@ -160,14 +171,7 @@ describe('TerminalCard — implicit AI routing', () => {
   });
 
   it('sends plain question to AI without ask prefix', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({ answer: 'Vue 3 is my main framework.' }),
-      }),
-    );
+    mockFetch(200, { answer: 'Vue 3 is my main framework.' });
 
     const wrapper = await mountInteractive();
     await runCmd(wrapper, 'what is your tech stack?');
@@ -177,14 +181,7 @@ describe('TerminalCard — implicit AI routing', () => {
   });
 
   it('ask prefix still works as explicit form', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({ answer: 'I love fintech challenges.' }),
-      }),
-    );
+    mockFetch(200, { answer: 'I love fintech challenges.' });
 
     const wrapper = await mountInteractive();
     await runCmd(wrapper, 'ask what do you enjoy?');
@@ -194,24 +191,17 @@ describe('TerminalCard — implicit AI routing', () => {
   });
 
   it('shows error when question exceeds 200 chars without fetching', async () => {
-    const mockFetch = vi.fn();
-    vi.stubGlobal('fetch', mockFetch);
+    const fetchSpy = vi.fn();
+    vi.stubGlobal('fetch', fetchSpy);
     const wrapper = await mountInteractive();
     await runCmd(wrapper, 'x'.repeat(201));
     await flushPromises();
     expect(wrapper.text()).toContain('question too long');
-    expect(mockFetch).not.toHaveBeenCalled();
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
   it('shows thinking then AI response on success', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({ answer: 'I love Vue 3 and fintech.' }),
-      }),
-    );
+    mockFetch(200, { answer: 'I love Vue 3 and fintech.' });
 
     const wrapper = await mountInteractive();
     await runCmd(wrapper, 'ask what do you love?');
@@ -221,14 +211,7 @@ describe('TerminalCard — implicit AI routing', () => {
   });
 
   it('shows rate limit message on 429 response', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: false,
-        status: 429,
-        json: async () => ({ error: 'rate limit: try again in a few minutes' }),
-      }),
-    );
+    mockFetch(429, { error: 'rate limit: try again in a few minutes' });
 
     const wrapper = await mountInteractive();
     await runCmd(wrapper, 'ask anything');
@@ -239,14 +222,7 @@ describe('TerminalCard — implicit AI routing', () => {
   });
 
   it('shows AI unavailable message on 503 response', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: false,
-        status: 503,
-        json: async () => ({ error: 'AI temporarily unavailable' }),
-      }),
-    );
+    mockFetch(503, { error: 'AI temporarily unavailable' });
 
     const wrapper = await mountInteractive();
     await runCmd(wrapper, 'ask anything');
@@ -273,9 +249,7 @@ describe('TerminalCard — exiting interactive mode', () => {
     const session = useTerminalSession(() => {});
     session.enter();
     expect(session.isInteractive.value).toBe(true);
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({
-      ok: true, status: 200, json: async () => ({ answer: 'ok' }),
-    }));
+    mockFetch(200, { answer: 'ok' });
     session.inputValue.value = 'exit';
     await session.execute();
     expect(session.isInteractive.value).toBe(true);
@@ -297,14 +271,7 @@ describe('TerminalCard — command history navigation', () => {
   });
 
   it('recalls previous command with ArrowUp', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({ answer: 'yes' }),
-      }),
-    );
+    mockFetch(200, { answer: 'yes' });
 
     const wrapper = await mountInteractive();
     const input = wrapper.find('.terminal__input');
@@ -317,14 +284,7 @@ describe('TerminalCard — command history navigation', () => {
   });
 
   it('clears input with ArrowDown past end of history', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({ answer: 'yes' }),
-      }),
-    );
+    mockFetch(200, { answer: 'yes' });
 
     const wrapper = await mountInteractive();
     const input = wrapper.find('.terminal__input');

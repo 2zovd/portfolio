@@ -151,6 +151,9 @@ const ON_TOPIC_PATTERNS: RegExp[] = [
 const OFF_TOPIC_RESPONSE =
   "That's outside what I talk about here — but I'd love to connect directly.";
 
+const AI_MODEL = '@cf/meta/llama-3.2-1b-instruct';
+const AI_MAX_TOKENS = 120;
+
 const MAX_QUESTION_LENGTH = 200;
 const RATE_LIMIT_MAX = 10;
 const RATE_LIMIT_WINDOW_SEC = 600; // 10 minutes
@@ -239,12 +242,12 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
-    const result = await ai.run('@cf/meta/llama-3.2-1b-instruct', {
+    const result = await ai.run(AI_MODEL, {
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: question },
       ],
-      max_tokens: 120,
+      max_tokens: AI_MAX_TOKENS,
     });
 
     const raw = result.response;
