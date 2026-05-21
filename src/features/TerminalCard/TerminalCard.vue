@@ -109,7 +109,10 @@ const staticLines = [
         :key="i"
         class="terminal__line terminal__line--group"
       >
-        <div class="terminal__line">
+        <div
+          v-if="entry.command !== undefined"
+          class="terminal__line"
+        >
           <span
             class="terminal__prompt"
             aria-hidden="true"

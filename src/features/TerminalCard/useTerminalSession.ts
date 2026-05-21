@@ -1,24 +1,23 @@
 import { ref, nextTick } from 'vue';
 
 export type HistoryEntry = {
-  command: string;
+  command?: string;
   output: string;
   type: 'info' | 'error' | 'success';
 };
 
 const HELP_OUTPUT = [
-  '  Just type your question — no prefix needed.',
+  'Just type your question — no prefix needed.',
   '',
-  '    e.g. "what\'s your tech stack?"',
-  '         "tell me about Libertex"',
-  '         "are you open to freelance?"',
+  '  e.g. "what\'s your tech stack?"',
+  '       "what projects have you shipped?"',
+  '       "are you open to freelance?"',
   '',
-  '  ask [question]   — explicit form',
-  '  clear            — reset conversation',
-  '  exit             — close',
+  'ask [question]   — explicit form',
+  'clear            — reset conversation',
 ].join('\n');
 
-const WELCOME_OUTPUT = '  Hi! Ask me anything about my work and experience.';
+const WELCOME_OUTPUT = 'Hi! Ask me anything about my work and experience.';
 
 const MAX_QUESTION_LENGTH = 200;
 const MAX_EMPTY_HINTS = 3;
@@ -48,7 +47,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
   function enter() {
     isInteractive.value = true;
     if (outputHistory.value.length === 0) {
-      pushHistory({ command: '', output: WELCOME_OUTPUT, type: 'info' });
+      pushHistory({ output: WELCOME_OUTPUT, type: 'info' });
     }
   }
 
@@ -71,7 +70,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
     if (question.length > MAX_QUESTION_LENGTH) {
       pushHistory({
         command: raw,
-        output: `  question too long (max ${MAX_QUESTION_LENGTH} chars)`,
+        output: `question too long (max ${MAX_QUESTION_LENGTH} chars)`,
         type: 'error',
       });
       await nextTick();
@@ -82,7 +81,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
     addToCmd(raw);
 
     const idx = outputHistory.value.length;
-    pushHistory({ command: raw, output: '  thinking...', type: 'info' });
+    pushHistory({ command: raw, output: 'thinking...', type: 'info' });
     await nextTick();
     scrollToBottom();
 
@@ -96,24 +95,24 @@ export function useTerminalSession(scrollToBottom: () => void) {
       let output: string;
       let type: 'info' | 'error';
       if (res.status === 429) {
-        output = '  rate limit reached. try again in a few minutes.';
+        output = 'rate limit reached. try again in a few minutes.';
         type = 'error';
       } else if (res.status === 503) {
-        output = '  AI is temporarily unavailable. try again later.';
+        output = 'AI is temporarily unavailable. try again later.';
         type = 'error';
       } else if (!res.ok) {
-        output = '  connection error. try again later.';
+        output = 'connection error. try again later.';
         type = 'error';
       } else {
         const data = (await res.json()) as { answer: string };
-        output = `  ${data.answer}`;
+        output = data.answer;
         type = 'info';
       }
       outputHistory.value[idx] = { command: raw, output, type };
     } catch {
       outputHistory.value[idx] = {
         command: raw,
-        output: '  connection error. try again later.',
+        output: 'connection error. try again later.',
         type: 'error',
       };
     }
@@ -130,7 +129,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
     if (raw === '') {
       if (emptyEnterCount.value < MAX_EMPTY_HINTS) {
         emptyEnterCount.value++;
-        pushHistory({ command: '', output: "  ask me something, or type 'help' for tips", type: 'info' });
+        pushHistory({ command: '', output: "ask me something, or type 'help' for tips", type: 'info' });
         await nextTick();
         scrollToBottom();
       }
@@ -138,12 +137,6 @@ export function useTerminalSession(scrollToBottom: () => void) {
     }
 
     const lower = raw.toLowerCase();
-
-    if (lower === 'exit') {
-      exit();
-      await nextTick();
-      return;
-    }
 
     if (lower === 'clear') {
       clearHistory();
@@ -162,7 +155,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
     if (lower === 'ask') {
       pushHistory({
         command: raw,
-        output: '  usage: ask [question] — or just type directly',
+        output: 'usage: ask [question] — or just type directly',
         type: 'error',
       });
       await nextTick();

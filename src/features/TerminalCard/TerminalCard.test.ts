@@ -97,7 +97,7 @@ describe('TerminalCard — help command', () => {
     const text = wrapper.text();
     expect(text).toContain('Just type your question');
     expect(text).toContain('clear');
-    expect(text).toContain('exit');
+    expect(text).not.toContain('exit             — close');
   });
 });
 
@@ -269,13 +269,17 @@ describe('TerminalCard — implicit AI routing', () => {
 });
 
 describe('TerminalCard — exiting interactive mode', () => {
-  it('exit command sets isInteractive to false (composable)', async () => {
+  it('typing "exit" does not close terminal — routes to AI', async () => {
     const session = useTerminalSession(() => {});
     session.enter();
     expect(session.isInteractive.value).toBe(true);
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({
+      ok: true, status: 200, json: async () => ({ answer: 'ok' }),
+    }));
     session.inputValue.value = 'exit';
     await session.execute();
-    expect(session.isInteractive.value).toBe(false);
+    expect(session.isInteractive.value).toBe(true);
+    vi.unstubAllGlobals();
   });
 
   it('exits on Escape key (component)', async () => {
