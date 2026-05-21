@@ -3,6 +3,7 @@ import { ClientRouter } from 'astro:transitions';
 import { SITE } from '@shared/config/site';
 import '@fontsource-variable/inter';
 import '@fontsource/jetbrains-mono/400.css';
+import jbMonoUrl from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2?url';
 import '../styles/global.scss';
 
 interface Props {
@@ -83,6 +84,9 @@ const personSchema = {
 
     {/* Favicon */}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    {/* Preload terminal/code-block font to avoid LCP delay on font swap */}
+    <link rel="preload" as="font" type="font/woff2" href={jbMonoUrl} crossorigin />
 
     {/* JSON-LD Person schema — homepage only */}
     {schema && (
