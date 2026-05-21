@@ -1,6 +1,8 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import { SITE } from '@shared/config/site';
+import '@fontsource-variable/inter';
+import '@fontsource/jetbrains-mono/400.css';
 import '../styles/global.scss';
 
 interface Props {
@@ -79,14 +81,6 @@ const personSchema = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageURL} />
 
-    {/* Fonts — preconnect before stylesheet to warm the connection */}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-    />
-
     {/* Favicon */}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
@@ -99,6 +93,8 @@ const personSchema = {
     {pageSchema && (
       <script is:inline type="application/ld+json" set:html={JSON.stringify(pageSchema).replace(/</g, '\\u003c')} />
     )}
+
+    <slot name="head" />
 
     <ClientRouter />
   </head>

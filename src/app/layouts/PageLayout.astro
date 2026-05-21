@@ -16,6 +16,9 @@ const props = Astro.props;
 ---
 
 <BaseLayout {...props}>
+  <Fragment slot="head">
+    <slot name="head" />
+  </Fragment>
   <a href="#main-content" class="skip-link">Skip to content</a>
   <div class="site">
     <Header />

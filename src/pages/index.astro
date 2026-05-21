@@ -1,7 +1,11 @@
 ---
+import { getImage } from 'astro:assets';
 import PageLayout from '@app/layouts/PageLayout.astro';
 import Hero from '@widgets/Hero/Hero.astro';
 import { SITE } from '@shared/config/site';
+import photo from '../assets/photo.png';
+
+const heroPhoto = await getImage({ src: photo, width: 240, height: 240, format: 'webp' });
 ---
 
 <PageLayout
@@ -9,5 +13,6 @@ import { SITE } from '@shared/config/site';
   description={SITE.description}
   schema
 >
+  <link slot="head" rel="preload" as="image" href={heroPhoto.src} fetchpriority="high" />
   <Hero />
 </PageLayout>

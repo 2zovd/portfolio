@@ -1,10 +1,7 @@
-// Typography — font loading reference and type-scale utility classes.
-// Preconnect/preload tags live in BaseLayout.astro, not here.
-// Google Fonts URLs (reference only — do NOT add <link> tags here):
-//   preconnect: https://fonts.googleapis.com
-//   preconnect: https://fonts.gstatic.com (crossorigin)
-//   Inter:          https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap
-//   JetBrains Mono: https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap
+// Typography — type-scale utility classes.
+// Fonts are self-hosted via @fontsource, imported in BaseLayout.astro:
+//   @fontsource-variable/inter      → --font-sans (variable font, all weights)
+//   @fontsource/jetbrains-mono/400  → --font-mono (terminal card, code blocks)
 
 // Type-scale utility classes — map directly to design-system spec.
 // All font sizes are unitless ratios resolved against the 14px body baseline.
