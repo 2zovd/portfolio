@@ -167,7 +167,7 @@ const staticLines = [
       aria-hidden="true"
     >
       <template v-if="!isInteractive">
-        click to interact ·
+        click to chat ·
       </template>type 'help'
     </div>
   </div>

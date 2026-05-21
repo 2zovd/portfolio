@@ -1,5 +1,4 @@
 import { ref, nextTick } from 'vue';
-import { runCommand } from './commands';
 
 export type HistoryEntry = {
   command: string;
@@ -7,17 +6,21 @@ export type HistoryEntry = {
   type: 'info' | 'error' | 'success';
 };
 
-type InterviewState = {
-  active: boolean;
-  step: number;
-};
+const HELP_OUTPUT = [
+  '  Just type your question — no prefix needed.',
+  '',
+  '    e.g. "what\'s your tech stack?"',
+  '         "tell me about Libertex"',
+  '         "are you open to freelance?"',
+  '',
+  '  ask [question]   — explicit form',
+  '  clear            — reset conversation',
+  '  exit             — close',
+].join('\n');
 
-const INTERVIEW_QUESTIONS = [
-  'Q 1/4: Describe your main stack in one sentence.',
-  "Q 2/4: What's your approach to legacy code?",
-  'Q 3/4: Vue 3 or React? (no wrong answers)',
-  'Q 4/4: One word to describe yourself as an engineer.',
-];
+const WELCOME_OUTPUT = '  Hi! Ask me anything about my work and experience.';
+
+const MAX_QUESTION_LENGTH = 200;
 
 export function useTerminalSession(scrollToBottom: () => void) {
   const isInteractive = ref(false);
@@ -25,38 +28,69 @@ export function useTerminalSession(scrollToBottom: () => void) {
   const outputHistory = ref<HistoryEntry[]>([]);
   const cmdHistory = ref<string[]>([]);
   const cmdHistoryIndex = ref(-1);
-  const interviewState = ref<InterviewState>({ active: false, step: 0 });
 
   function enter() {
     isInteractive.value = true;
+    if (outputHistory.value.length === 0) {
+      outputHistory.value.push({ command: '', output: WELCOME_OUTPUT, type: 'info' });
+    }
   }
 
   function exit() {
     isInteractive.value = false;
     inputValue.value = '';
     cmdHistoryIndex.value = -1;
-    interviewState.value = { active: false, step: 0 };
   }
 
-  async function advanceInterview(answer: string) {
-    const step = interviewState.value.step;
+  async function askAI(raw: string, question: string) {
+    if (question.length > MAX_QUESTION_LENGTH) {
+      outputHistory.value.push({
+        command: raw,
+        output: `  question too long (max ${MAX_QUESTION_LENGTH} chars)`,
+        type: 'error',
+      });
+      await nextTick();
+      scrollToBottom();
+      return;
+    }
 
-    if (step < INTERVIEW_QUESTIONS.length - 1) {
-      interviewState.value.step++;
-      const nextQ = INTERVIEW_QUESTIONS[step + 1] ?? '';
-      outputHistory.value.push({
-        command: answer,
-        output: `  [noted]\n\n  ${nextQ}`,
-        type: 'info',
+    if (raw !== cmdHistory.value[0]) cmdHistory.value.unshift(raw);
+
+    const idx = outputHistory.value.length;
+    outputHistory.value.push({ command: raw, output: '  thinking...', type: 'info' });
+    await nextTick();
+    scrollToBottom();
+
+    try {
+      const res = await fetch('/api/terminal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question }),
       });
-    } else {
-      interviewState.value = { active: false, step: 0 };
-      outputHistory.value.push({
-        command: answer,
-        output:
-          '  [noted]\n\n  Interview complete. Strong candidate.\n  Advancing to next round.\n  ...just kidding — but reach me at /contact',
-        type: 'success',
-      });
+
+      let output: string;
+      let type: 'info' | 'error';
+      if (res.status === 429) {
+        output = '  rate limit reached. try again in a few minutes.';
+        type = 'error';
+      } else if (res.status === 503) {
+        output = '  AI is temporarily unavailable. try again later.';
+        type = 'error';
+      } else if (!res.ok) {
+        output = '  connection error. try again later.';
+        type = 'error';
+      } else {
+        const data = (await res.json()) as { answer: string };
+        output = `  ${data.answer}`;
+        type = 'info';
+      }
+      outputHistory.value[idx] = { command: raw, output, type };
+    } catch {
+      outputHistory.value[idx] = {
+        command: raw,
+        output: '  connection error. try again later.',
+        type: 'error',
+      };
     }
 
     await nextTick();
@@ -80,121 +114,38 @@ export function useTerminalSession(scrollToBottom: () => void) {
 
     if (lower === 'clear') {
       outputHistory.value = [];
-      interviewState.value = { active: false, step: 0 };
       await nextTick();
       return;
     }
 
-    if (interviewState.value.active) {
-      await advanceInterview(raw);
-      return;
-    }
-
-    if (lower === 'ask' || lower.startsWith('ask ')) {
-      const question = raw.slice(4).trim();
-
-      if (!question) {
-        outputHistory.value.push({
-          command: raw,
-          output: '  usage: ask [your question]',
-          type: 'error',
-        });
-        await nextTick();
-        scrollToBottom();
-        return;
-      }
-
-      if (question.length > 200) {
-        outputHistory.value.push({
-          command: raw,
-          output: '  question too long (max 200 chars)',
-          type: 'error',
-        });
-        await nextTick();
-        scrollToBottom();
-        return;
-      }
-
+    if (lower === 'help') {
       if (raw !== cmdHistory.value[0]) cmdHistory.value.unshift(raw);
-
-      const idx = outputHistory.value.length;
-      outputHistory.value.push({ command: raw, output: '  thinking...', type: 'info' });
-      await nextTick();
-      scrollToBottom();
-
-      try {
-        const res = await fetch('/api/terminal', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question }),
-        });
-
-        let output: string;
-        let type: 'info' | 'error';
-        if (res.status === 429) {
-          output = '  rate limit reached. try again in a few minutes.';
-          type = 'error';
-        } else if (!res.ok) {
-          output = '  connection error. try again later.';
-          type = 'error';
-        } else {
-          const data = (await res.json()) as { answer: string };
-          output = `  ${data.answer}`;
-          type = 'info';
-        }
-        outputHistory.value[idx] = { command: raw, output, type };
-      } catch {
-        outputHistory.value[idx] = {
-          command: raw,
-          output: '  connection error. try again later.',
-          type: 'error',
-        };
-      }
-
+      outputHistory.value.push({ command: raw, output: HELP_OUTPUT, type: 'info' });
       await nextTick();
       scrollToBottom();
       return;
     }
 
-    if (lower === 'interview') {
-      if (raw !== cmdHistory.value[0]) cmdHistory.value.unshift(raw);
+    if (lower === 'ask') {
       outputHistory.value.push({
         command: raw,
-        output: [
-          '  Starting interview session...',
-          '  Type your answers and press Enter.',
-          '',
-          `  ${INTERVIEW_QUESTIONS[0] ?? ''}`,
-        ].join('\n'),
-        type: 'info',
+        output: '  usage: ask [question] — or just type directly',
+        type: 'error',
       });
-      interviewState.value = { active: true, step: 0 };
       await nextTick();
       scrollToBottom();
       return;
     }
 
-    const result = runCommand(raw);
-
-    if (raw !== cmdHistory.value[0]) {
-      cmdHistory.value.unshift(raw);
-    }
-
-    outputHistory.value.push({
-      command: raw,
-      output: result.output,
-      type: result.type,
-    });
-
-    await nextTick();
-    scrollToBottom();
+    // Everything else: implicit AI question. Strip optional 'ask ' prefix.
+    const question = lower.startsWith('ask ') ? raw.slice(4).trim() : raw;
+    await askAI(raw, question);
   }
 
   function navigateHistory(direction: -1 | 1) {
     const len = cmdHistory.value.length;
     if (len === 0) return;
 
-    // ArrowUp (direction=-1) → older command = higher index; ArrowDown (direction=1) → newer = lower
     const next = cmdHistoryIndex.value - direction;
     if (next < -1 || next >= len) return;
 

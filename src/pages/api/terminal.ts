@@ -87,6 +87,6 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ answer: result.response }, 200);
   } catch (err) {
     console.error('[terminal/ai]', err);
-    return json({ error: 'AI request failed' }, 500);
+    return json({ error: 'AI temporarily unavailable' }, 503);
   }
 };

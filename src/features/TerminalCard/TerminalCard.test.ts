@@ -71,77 +71,38 @@ describe('TerminalCard — entering interactive mode', () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.find('.terminal__input').exists()).toBe(true);
   });
+
+  it('shows welcome message on first activation', async () => {
+    const wrapper = await mountInteractive();
+    expect(wrapper.text()).toContain('Ask me anything');
+  });
+
+  it('does not repeat welcome message on re-entry when history exists', async () => {
+    const wrapper = await mountInteractive();
+    // Exit, re-enter — history is not empty so welcome should not be pushed again
+    await wrapper.find('.terminal').trigger('keydown', { key: 'Escape' });
+    await wrapper.vm.$nextTick();
+    await wrapper.find('.terminal').trigger('click');
+    await wrapper.vm.$nextTick();
+    const groups = wrapper.findAll('.terminal__line--group');
+    // Only the initial welcome entry (command='') should exist, no duplicates
+    expect(groups.length).toBe(1);
+  });
 });
 
-describe('TerminalCard — commands', () => {
-  it('executes help and shows new command list', async () => {
+describe('TerminalCard — help command', () => {
+  it('shows example questions and reserved commands', async () => {
     const wrapper = await mountInteractive();
     await runCmd(wrapper, 'help');
     const text = wrapper.text();
-    expect(text).toContain('uptime');
-    expect(text).toContain('interview');
-    expect(text).toContain('ask');
+    expect(text).toContain('Just type your question');
+    expect(text).toContain('clear');
+    expect(text).toContain('exit');
   });
+});
 
-  it('executes uptime and shows developer uptime', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'uptime');
-    expect(wrapper.text()).toContain('7 years');
-    expect(wrapper.text()).toContain('coffee');
-  });
-
-  it('executes man dmytro and shows manual page', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'man dmytro');
-    const text = wrapper.text();
-    expect(text).toContain('DMYTRO(1)');
-    expect(text).toContain('--typescript');
-  });
-
-  it('executes fortune and shows a quote', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'fortune');
-    const output = wrapper.find('.terminal__output--info');
-    expect(output.exists()).toBe(true);
-    expect(output.text().length).toBeGreaterThan(5);
-  });
-
-  it('executes curl /api/bio and shows JSON', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'curl /api/bio');
-    const text = wrapper.text();
-    expect(text).toContain('Dmytro Tuzov');
-    expect(text).toContain('fintech');
-  });
-
-  it('sudo hire returns permission denied', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'sudo hire');
-    expect(wrapper.text()).toContain('Permission denied');
-    expect(wrapper.find('.terminal__output--error').exists()).toBe(true);
-  });
-
-  it('sudo rm -rf / returns filesystem-read-only message', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'sudo rm -rf /');
-    expect(wrapper.text()).toContain('read-only');
-  });
-
-  it('sudo unknown command reports incident', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'sudo something');
-    expect(wrapper.text()).toContain('incident');
-    expect(wrapper.find('.terminal__output--error').exists()).toBe(true);
-  });
-
-  it('shows error for unknown command', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'foobar');
-    expect(wrapper.text()).toContain('command not found: foobar');
-    expect(wrapper.find('.terminal__output--error').exists()).toBe(true);
-  });
-
-  it('clears history on clear command', async () => {
+describe('TerminalCard — reserved commands', () => {
+  it('clear resets history', async () => {
     const wrapper = await mountInteractive();
     await runCmd(wrapper, 'help');
     await runCmd(wrapper, 'clear');
@@ -150,72 +111,64 @@ describe('TerminalCard — commands', () => {
 
   it('ignores empty input on Enter', async () => {
     const wrapper = await mountInteractive();
+    // Only the welcome entry (command='') exists; empty input adds nothing
+    const before = wrapper.findAll('.terminal__line--group').length;
     await runCmd(wrapper, '');
-    expect(wrapper.findAll('.terminal__line--group').length).toBe(0);
+    expect(wrapper.findAll('.terminal__line--group').length).toBe(before);
   });
 
-  it('whoami easter egg still works', async () => {
+  it('bare ask shows usage hint', async () => {
     const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'whoami');
-    expect(wrapper.text()).toContain("that's my line");
-  });
-
-  it('skills easter egg still works', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'skills');
-    expect(wrapper.text()).toContain('TypeScript');
+    await runCmd(wrapper, 'ask');
+    expect(wrapper.text()).toContain('usage: ask [question]');
+    expect(wrapper.find('.terminal__output--error').exists()).toBe(true);
   });
 });
 
-describe('TerminalCard — interview', () => {
-  it('starts interview with initial message and first question', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'interview');
-    const text = wrapper.text();
-    expect(text).toContain('Starting interview session');
-    expect(text).toContain('Q 1/4');
-  });
-
-  it('advances through all 4 questions and shows completion', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'interview');
-
-    const answers = ['TypeScript everywhere', 'refactor incrementally', 'Vue 3', 'relentless'];
-    for (const answer of answers) {
-      await runCmd(wrapper, answer);
-    }
-
-    expect(wrapper.text()).toContain('Interview complete');
-    expect(wrapper.text()).toContain('Strong candidate');
-  });
-
-  it('clear during interview resets interview state', async () => {
-    const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'interview');
-    await runCmd(wrapper, 'clear');
-    // After clear, the next input should run as a command, not an interview answer
-    await runCmd(wrapper, 'foobar');
-    expect(wrapper.text()).toContain('command not found: foobar');
-  });
-});
-
-describe('TerminalCard — ask command', () => {
+describe('TerminalCard — implicit AI routing', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
-  it('shows usage error when ask has no question', async () => {
+  it('sends plain question to AI without ask prefix', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ answer: 'Vue 3 is my main framework.' }),
+      }),
+    );
+
     const wrapper = await mountInteractive();
-    await runCmd(wrapper, 'ask');
-    expect(wrapper.text()).toContain('usage: ask [your question]');
-    expect(wrapper.find('.terminal__output--error').exists()).toBe(true);
+    await runCmd(wrapper, 'what is your tech stack?');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Vue 3 is my main framework.');
+  });
+
+  it('ask prefix still works as explicit form', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ answer: 'I love fintech challenges.' }),
+      }),
+    );
+
+    const wrapper = await mountInteractive();
+    await runCmd(wrapper, 'ask what do you enjoy?');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('I love fintech challenges.');
   });
 
   it('shows error when question exceeds 200 chars without fetching', async () => {
     const mockFetch = vi.fn();
     vi.stubGlobal('fetch', mockFetch);
     const wrapper = await mountInteractive();
-    await runCmd(wrapper, `ask ${'x'.repeat(201)}`);
+    await runCmd(wrapper, 'x'.repeat(201));
     await flushPromises();
     expect(wrapper.text()).toContain('question too long');
     expect(mockFetch).not.toHaveBeenCalled();
@@ -256,6 +209,24 @@ describe('TerminalCard — ask command', () => {
     expect(wrapper.find('.terminal__output--error').exists()).toBe(true);
   });
 
+  it('shows AI unavailable message on 503 response', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({
+        ok: false,
+        status: 503,
+        json: async () => ({ error: 'AI temporarily unavailable' }),
+      }),
+    );
+
+    const wrapper = await mountInteractive();
+    await runCmd(wrapper, 'ask anything');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('AI is temporarily unavailable');
+    expect(wrapper.find('.terminal__output--error').exists()).toBe(true);
+  });
+
   it('shows connection error on fetch failure', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValueOnce(new Error('network error')));
 
@@ -288,20 +259,44 @@ describe('TerminalCard — exiting interactive mode', () => {
 });
 
 describe('TerminalCard — command history navigation', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('recalls previous command with ArrowUp', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ answer: 'yes' }),
+      }),
+    );
+
     const wrapper = await mountInteractive();
     const input = wrapper.find('.terminal__input');
-    await runCmd(wrapper, 'help');
+    await runCmd(wrapper, 'what is your stack?');
+    await flushPromises();
     await input.setValue('');
     await input.trigger('keydown', { key: 'ArrowUp' });
     await wrapper.vm.$nextTick();
-    expect((input.element as HTMLInputElement).value).toBe('help');
+    expect((input.element as HTMLInputElement).value).toBe('what is your stack?');
   });
 
   it('clears input with ArrowDown past end of history', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ answer: 'yes' }),
+      }),
+    );
+
     const wrapper = await mountInteractive();
     const input = wrapper.find('.terminal__input');
-    await runCmd(wrapper, 'help');
+    await runCmd(wrapper, 'what is your stack?');
+    await flushPromises();
     await input.trigger('keydown', { key: 'ArrowUp' });
     await wrapper.vm.$nextTick();
     await input.trigger('keydown', { key: 'ArrowDown' });
