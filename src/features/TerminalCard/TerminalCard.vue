@@ -14,7 +14,7 @@ function scrollToBottom() {
   }
 }
 
-const { isInteractive, inputValue, outputHistory, enter, exit, execute, navigateHistory } =
+const { isInteractive, inputValue, outputHistory, enter, exit, execute, clearHistory, navigateHistory } =
   useTerminalSession(scrollToBottom);
 
 async function handleContainerClick() {
@@ -35,6 +35,10 @@ async function handleContainerKeydown(e: KeyboardEvent) {
     exit();
     await nextTick();
     containerRef.value?.focus();
+  }
+  if (isInteractive.value && e.metaKey && e.key === 'k') {
+    e.preventDefault();
+    clearHistory();
   }
 }
 

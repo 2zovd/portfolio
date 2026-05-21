@@ -21,6 +21,9 @@ const HELP_OUTPUT = [
 const WELCOME_OUTPUT = '  Hi! Ask me anything about my work and experience.';
 
 const MAX_QUESTION_LENGTH = 200;
+const MAX_EMPTY_HINTS = 3;
+const MAX_HISTORY = 200;
+const MAX_CMD_HISTORY = 50;
 
 export function useTerminalSession(scrollToBottom: () => void) {
   const isInteractive = ref(false);
@@ -28,11 +31,24 @@ export function useTerminalSession(scrollToBottom: () => void) {
   const outputHistory = ref<HistoryEntry[]>([]);
   const cmdHistory = ref<string[]>([]);
   const cmdHistoryIndex = ref(-1);
+  const emptyEnterCount = ref(0);
+
+  function pushHistory(entry: HistoryEntry) {
+    outputHistory.value.push(entry);
+    if (outputHistory.value.length > MAX_HISTORY) {
+      outputHistory.value.shift();
+    }
+  }
+
+  function clearHistory() {
+    outputHistory.value = [];
+    emptyEnterCount.value = 0;
+  }
 
   function enter() {
     isInteractive.value = true;
     if (outputHistory.value.length === 0) {
-      outputHistory.value.push({ command: '', output: WELCOME_OUTPUT, type: 'info' });
+      pushHistory({ command: '', output: WELCOME_OUTPUT, type: 'info' });
     }
   }
 
@@ -42,9 +58,18 @@ export function useTerminalSession(scrollToBottom: () => void) {
     cmdHistoryIndex.value = -1;
   }
 
+  function addToCmd(raw: string) {
+    if (raw !== cmdHistory.value[0]) {
+      cmdHistory.value.unshift(raw);
+      if (cmdHistory.value.length > MAX_CMD_HISTORY) {
+        cmdHistory.value.pop();
+      }
+    }
+  }
+
   async function askAI(raw: string, question: string) {
     if (question.length > MAX_QUESTION_LENGTH) {
-      outputHistory.value.push({
+      pushHistory({
         command: raw,
         output: `  question too long (max ${MAX_QUESTION_LENGTH} chars)`,
         type: 'error',
@@ -54,10 +79,10 @@ export function useTerminalSession(scrollToBottom: () => void) {
       return;
     }
 
-    if (raw !== cmdHistory.value[0]) cmdHistory.value.unshift(raw);
+    addToCmd(raw);
 
     const idx = outputHistory.value.length;
-    outputHistory.value.push({ command: raw, output: '  thinking...', type: 'info' });
+    pushHistory({ command: raw, output: '  thinking...', type: 'info' });
     await nextTick();
     scrollToBottom();
 
@@ -102,7 +127,15 @@ export function useTerminalSession(scrollToBottom: () => void) {
     inputValue.value = '';
     cmdHistoryIndex.value = -1;
 
-    if (raw === '') return;
+    if (raw === '') {
+      if (emptyEnterCount.value < MAX_EMPTY_HINTS) {
+        emptyEnterCount.value++;
+        pushHistory({ command: '', output: "  ask me something, or type 'help' for tips", type: 'info' });
+        await nextTick();
+        scrollToBottom();
+      }
+      return;
+    }
 
     const lower = raw.toLowerCase();
 
@@ -113,21 +146,21 @@ export function useTerminalSession(scrollToBottom: () => void) {
     }
 
     if (lower === 'clear') {
-      outputHistory.value = [];
+      clearHistory();
       await nextTick();
       return;
     }
 
     if (lower === 'help') {
-      if (raw !== cmdHistory.value[0]) cmdHistory.value.unshift(raw);
-      outputHistory.value.push({ command: raw, output: HELP_OUTPUT, type: 'info' });
+      addToCmd(raw);
+      pushHistory({ command: raw, output: HELP_OUTPUT, type: 'info' });
       await nextTick();
       scrollToBottom();
       return;
     }
 
     if (lower === 'ask') {
-      outputHistory.value.push({
+      pushHistory({
         command: raw,
         output: '  usage: ask [question] — or just type directly',
         type: 'error',
@@ -160,6 +193,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
     enter,
     exit,
     execute,
+    clearHistory,
     navigateHistory,
   };
 }

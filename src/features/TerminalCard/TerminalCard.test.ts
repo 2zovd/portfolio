@@ -109,12 +109,41 @@ describe('TerminalCard — reserved commands', () => {
     expect(wrapper.findAll('.terminal__line--group').length).toBe(0);
   });
 
-  it('ignores empty input on Enter', async () => {
+  it('Cmd+K clears history', async () => {
     const wrapper = await mountInteractive();
-    // Only the welcome entry (command='') exists; empty input adds nothing
+    await runCmd(wrapper, 'help');
+    await wrapper.find('.terminal').trigger('keydown', { key: 'k', metaKey: true });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.findAll('.terminal__line--group').length).toBe(0);
+  });
+
+  it('empty Enter shows hint on first press', async () => {
+    const wrapper = await mountInteractive();
     const before = wrapper.findAll('.terminal__line--group').length;
     await runCmd(wrapper, '');
-    expect(wrapper.findAll('.terminal__line--group').length).toBe(before);
+    expect(wrapper.findAll('.terminal__line--group').length).toBe(before + 1);
+    expect(wrapper.text()).toContain('ask me something');
+  });
+
+  it('empty Enter hint capped at 3 — 4th press adds nothing', async () => {
+    const wrapper = await mountInteractive();
+    await runCmd(wrapper, '');
+    await runCmd(wrapper, '');
+    await runCmd(wrapper, '');
+    const countAfter3 = wrapper.findAll('.terminal__line--group').length;
+    await runCmd(wrapper, '');
+    expect(wrapper.findAll('.terminal__line--group').length).toBe(countAfter3);
+  });
+
+  it('clear resets empty-hint counter so hints show again', async () => {
+    const wrapper = await mountInteractive();
+    await runCmd(wrapper, '');
+    await runCmd(wrapper, '');
+    await runCmd(wrapper, '');
+    await runCmd(wrapper, 'clear');
+    const after = wrapper.findAll('.terminal__line--group').length;
+    await runCmd(wrapper, '');
+    expect(wrapper.findAll('.terminal__line--group').length).toBe(after + 1);
   });
 
   it('bare ask shows usage hint', async () => {
