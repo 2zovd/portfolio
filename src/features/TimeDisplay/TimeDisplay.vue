@@ -51,7 +51,7 @@ function computeWorkHours(now: Date): void {
     workSuffix.value = rh > 0 ? `· ${rh}h ${rm}m left` : `· ${rm}m left`;
   } else {
     progressPercent.value = 0;
-    const nextDay = day < days[0] || day > days[1] ? DAY_NAMES[days[0]] : DAY_NAMES[(day % 7) + 1];
+    const nextDay = day < days[0] || day >= days[1] ? DAY_NAMES[days[0]] : DAY_NAMES[day + 1];
     workSuffix.value = `· back ${nextDay} ${String(start).padStart(2, '0')}:00`;
   }
 }

@@ -218,6 +218,7 @@ const staticLines = [
   line-height: 1.8;
   color: var(--color-text);
   overflow-y: auto;
+  overflow-x: hidden;
   max-height: 280px;
   display: flex;
   flex-direction: column;
@@ -256,7 +257,8 @@ const staticLines = [
 
 .terminal__output {
   padding-left: calc(var(--space-2) + 1ch);
-  white-space: pre;
+  white-space: pre-wrap;
+  word-break: break-word;
   color: var(--color-muted);
 
   &.terminal__output--error {

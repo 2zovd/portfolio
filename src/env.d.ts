@@ -1,5 +1,13 @@
 /// <reference types="astro/client" />
 
+declare namespace App {
+  interface Locals {
+    runtime?: {
+      env: Record<string, unknown>;
+    };
+  }
+}
+
 interface ImportMetaEnv {
   readonly PUBLIC_TURNSTILE_SITE_KEY: string;
   readonly TURNSTILE_SECRET_KEY: string;
