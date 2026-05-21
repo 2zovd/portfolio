@@ -140,7 +140,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .mobile-nav {
   display: none;
   position: relative;
