@@ -321,6 +321,12 @@ const staticLines = [
   min-width: 0;
 }
 
+@media (hover: none) and (pointer: coarse) {
+  .terminal__input {
+    font-size: 16px;
+  }
+}
+
 /* invisible mirror: positions the fake cursor after the text at selectionStart */
 .terminal__input-mirror {
   position: absolute;
