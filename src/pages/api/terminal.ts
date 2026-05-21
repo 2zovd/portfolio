@@ -43,6 +43,21 @@ const BLOCKED_INPUT_PATTERNS: RegExp[] = [
 const BLOCKED_INPUT_RESPONSE =
   "That's not something I can help with — ask me about my work, skills, or experience.";
 
+// Salary, rates, compensation — redirect to contact instead of guessing
+const SALARY_PATTERNS: RegExp[] = [
+  /\bhourly rate\b/i,
+  /\bdaily rate\b/i,
+  /\brate per (hour|day)\b/i,
+  /\bhow much (do you charge|do you cost|are you)\b/i,
+  /\byour (rate|rates|salary|pay|wage|fee|fees|pricing)\b/i,
+  /\bwhat (do you charge|is your (rate|salary|pay|fee))\b/i,
+  /\bcompensation\b/i,
+  /\bhow much (do you earn|do you make|are you paid)\b/i,
+];
+
+const SALARY_RESPONSE =
+  "Rates depend on the project — reach out directly and we'll figure out something that works.";
+
 // Attempts to extract employer/company details
 const EMPLOYER_PROBE_PATTERNS: RegExp[] = [
   /\bwho (do|did) you work for\b/i,
@@ -131,6 +146,10 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (BLOCKED_INPUT_PATTERNS.some((p) => p.test(question))) {
     return json({ answer: BLOCKED_INPUT_RESPONSE, contact: false }, 200);
+  }
+
+  if (SALARY_PATTERNS.some((p) => p.test(question))) {
+    return json({ answer: SALARY_RESPONSE, contact: true }, 200);
   }
 
   if (EMPLOYER_PROBE_PATTERNS.some((p) => p.test(question))) {

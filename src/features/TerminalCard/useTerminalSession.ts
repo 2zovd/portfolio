@@ -95,12 +95,15 @@ export function useTerminalSession(scrollToBottom: () => void) {
 
       let output: string;
       let type: 'info' | 'error';
+      let contactLink: string | undefined;
       if (res.status === 429) {
         output = 'rate limit reached. try again in a few minutes.';
         type = 'error';
+        contactLink = '/contact';
       } else if (res.status === 503) {
         output = 'AI is temporarily unavailable. try again later.';
         type = 'error';
+        contactLink = '/contact';
       } else if (!res.ok) {
         output = 'connection error. try again later.';
         type = 'error';
@@ -108,14 +111,9 @@ export function useTerminalSession(scrollToBottom: () => void) {
         const data = (await res.json()) as { answer: string; contact?: boolean };
         output = data.answer;
         type = 'info';
-        if (data.contact) {
-          outputHistory.value[idx] = { command: raw, output, type, contactLink: '/contact' };
-          await nextTick();
-          scrollToBottom();
-          return;
-        }
+        if (data.contact) contactLink = '/contact';
       }
-      outputHistory.value[idx] = { command: raw, output, type };
+      outputHistory.value[idx] = { command: raw, output, type, contactLink };
     } catch {
       outputHistory.value[idx] = {
         command: raw,
