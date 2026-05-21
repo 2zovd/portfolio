@@ -4,6 +4,7 @@ export type HistoryEntry = {
   command?: string;
   output: string;
   type: 'info' | 'error' | 'success';
+  contactLink?: string;
 };
 
 const HELP_OUTPUT = [
@@ -104,9 +105,15 @@ export function useTerminalSession(scrollToBottom: () => void) {
         output = 'connection error. try again later.';
         type = 'error';
       } else {
-        const data = (await res.json()) as { answer: string };
+        const data = (await res.json()) as { answer: string; contact?: boolean };
         output = data.answer;
         type = 'info';
+        if (data.contact) {
+          outputHistory.value[idx] = { command: raw, output, type, contactLink: '/contact' };
+          await nextTick();
+          scrollToBottom();
+          return;
+        }
       }
       outputHistory.value[idx] = { command: raw, output, type };
     } catch {

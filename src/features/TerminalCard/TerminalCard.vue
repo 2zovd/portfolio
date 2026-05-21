@@ -125,6 +125,11 @@ const staticLines = [
         >
           {{ entry.output }}
         </div>
+        <a
+          v-if="entry.contactLink"
+          :href="entry.contactLink"
+          class="terminal__contact-link"
+        >→ open /contact</a>
       </div>
 
       <div class="terminal__line terminal__line--input">
@@ -274,6 +279,23 @@ const staticLines = [
 
   &.terminal__output--success {
     color: var(--color-text);
+  }
+}
+
+.terminal__contact-link {
+  padding-left: calc(var(--space-2) + 1ch);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-accent);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
 }
 
