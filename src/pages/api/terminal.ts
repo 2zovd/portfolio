@@ -58,6 +58,28 @@ const SALARY_PATTERNS: RegExp[] = [
 const SALARY_RESPONSE =
   "Rates depend on the project — reach out directly and we'll figure out something that works.";
 
+// Hire / availability / collaboration — always redirect to contact
+const HIRE_PATTERNS: RegExp[] = [
+  /\bhire\b/i,
+  /\bhiring\b/i,
+  /\bfreelance\b/i,
+  /\bcontract (work|role|position|job|project)\b/i,
+  /\bwork (with|for|together)\b/i,
+  /\bwork on (a |this )?(project|startup|product|app)/i,
+  /\bavailabl/i,
+  /\brecruit/i,
+  /\bjob offer\b/i,
+  /\bopen to\b/i,
+  /\bopportunit/i,
+  /\bcollaborat/i,
+  /\bonboard/i,
+  /\bfull.?time\b/i,
+  /\bpart.?time\b/i,
+];
+
+const HIRE_RESPONSE =
+  "Happy to discuss — reach out directly and we'll take it from there.";
+
 // Attempts to extract employer/company details
 const EMPLOYER_PROBE_PATTERNS: RegExp[] = [
   /\bwho (do|did) you work for\b/i,
@@ -119,9 +141,7 @@ const ON_TOPIC_PATTERNS: RegExp[] = [
   /\bfintech\b/i, /\btrading\b/i, /\byears?\b/i,
   // Projects & portfolio
   /\bproject/i, /\bportfolio\b/i, /\bbuilt?\b/i, /\bship(ped)?\b/i,
-  // Availability & hire
-  /\bfreelance\b/i, /\bhire\b/i, /\bavailabl/i, /\bopportunit/i,
-  /\bcontract\b/i, /\bcollaborat/i, /\bopen to\b/i,
+  // Availability keywords removed — handled by HIRE_PATTERNS before this check
   // Generic about-me conversation
   /\bwho are you\b/i, /\bwhat do you do\b/i, /\btell me\b/i,
   /\babout (you|yourself)\b/i, /\bintroduce\b/i, /\bdmytro\b/i,
@@ -177,6 +197,10 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (SALARY_PATTERNS.some((p) => p.test(question))) {
     return json({ answer: SALARY_RESPONSE, contact: true }, 200);
+  }
+
+  if (HIRE_PATTERNS.some((p) => p.test(question))) {
+    return json({ answer: HIRE_RESPONSE, contact: true }, 200);
   }
 
   if (EMPLOYER_PROBE_PATTERNS.some((p) => p.test(question))) {
