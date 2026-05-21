@@ -43,6 +43,42 @@ const BLOCKED_INPUT_PATTERNS: RegExp[] = [
 const BLOCKED_INPUT_RESPONSE =
   "That's not something I can help with — ask me about my work, skills, or experience.";
 
+// Attempts to extract employer/company details
+const EMPLOYER_PROBE_PATTERNS: RegExp[] = [
+  /\bwho (do|did) you work for\b/i,
+  /\byour (current |previous |former )?(employer|company|firm|organization|org)\b/i,
+  /\bcompany (name|you work|are you at)\b/i,
+  /\bwhere (do|did) you work\b/i,
+  /\bwhich company\b/i,
+  /\byour boss\b/i,
+  /libertex/i,
+];
+
+const EMPLOYER_PROBE_RESPONSE =
+  "I keep employer details private — but I'm happy to talk about my work and experience.";
+
+// Profanity and personal insults
+const PROFANITY_PATTERNS: RegExp[] = [
+  /\bfuck/i,
+  /\bshit\b/i,
+  /\bass(hole)?\b/i,
+  /\bbitch\b/i,
+  /\bstupid\b/i,
+  /\bidiot\b/i,
+  /\bmoron\b/i,
+  /\bdumbass\b/i,
+  /\bloser\b/i,
+  /\bprick\b/i,
+  /\bdick\b/i,
+  /\bcunt\b/i,
+  /\bwanker\b/i,
+  /\bретард/i,
+  /\bдурак/i,
+  /\bидиот/i,
+];
+
+const PROFANITY_RESPONSE = "Let's keep it respectful — feel free to ask about my work.";
+
 const UNSAFE_OUTPUT_PATTERNS: RegExp[] = [
   /i can (extract|steal|hack|breach|scrape)/i,
   /i have (experience|access).{0,40}(hack|steal|extract|crack)/i,
@@ -95,6 +131,14 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (BLOCKED_INPUT_PATTERNS.some((p) => p.test(question))) {
     return json({ answer: BLOCKED_INPUT_RESPONSE, contact: false }, 200);
+  }
+
+  if (EMPLOYER_PROBE_PATTERNS.some((p) => p.test(question))) {
+    return json({ answer: EMPLOYER_PROBE_RESPONSE, contact: false }, 200);
+  }
+
+  if (PROFANITY_PATTERNS.some((p) => p.test(question))) {
+    return json({ answer: PROFANITY_RESPONSE, contact: false }, 200);
   }
 
   // Rate limiting via Cloudflare KV (fail-open: if KV unavailable, allow request)
