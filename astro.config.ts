@@ -21,6 +21,9 @@ export default defineConfig({
   },
   integrations: [vue(), sitemap()],
   vite: {
+    build: {
+      assetsInlineLimit: 0,
+    },
     css: {
       preprocessorOptions: {
         scss: {

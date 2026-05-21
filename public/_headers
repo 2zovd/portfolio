@@ -23,7 +23,7 @@
   # fully static SSG site with no user-generated content — XSS risk is accepted.
   #
   # challenges.cloudflare.com: Cloudflare Turnstile widget (contact form, EPIC-03).
-  # fonts.googleapis.com + fonts.gstatic.com: Google Fonts stylesheet and files.
+  # Fonts are self-hosted via @fontsource — no external font origins needed.
   # base-uri 'self': prevents base-tag injection attacks.
   # form-action 'self': contact form may only POST to the same origin.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' data: https://challenges.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' data: https://challenges.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
