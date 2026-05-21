@@ -1,5 +1,4 @@
 import type { APIRoute } from 'astro';
-import { env as cfEnv } from 'cloudflare:workers';
 
 export const prerender = false;
 
@@ -23,6 +22,19 @@ function json(body: unknown, status: number): Response {
   });
 }
 
+async function resolveAi(locals: App.Locals): Promise<AiBinding | undefined> {
+  // Dynamic import so a missing module doesn't crash the Worker at startup
+  try {
+    const { env } = await import('cloudflare:workers');
+    const binding = env['AI'] as AiBinding | undefined;
+    if (binding) return binding;
+  } catch {
+    // cloudflare:workers not available in this environment
+  }
+  // Legacy path: @astrojs/cloudflare <v13 passed env via locals.runtime
+  return locals.runtime?.env?.['AI'] as AiBinding | undefined;
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
   let question: string;
   try {
@@ -36,11 +48,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return json({ error: 'empty question' }, 400);
   }
 
-  // Prefer cloudflare:workers (new @cloudflare/vite-plugin approach),
-  // fall back to locals.runtime.env (legacy adapter path)
-  const ai =
-    (cfEnv['AI'] as AiBinding | undefined) ??
-    (locals.runtime?.env?.['AI'] as AiBinding | undefined);
+  const ai = await resolveAi(locals);
 
   if (!ai) {
     return json({ error: 'AI not available' }, 503);
