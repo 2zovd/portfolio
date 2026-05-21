@@ -138,6 +138,20 @@ const GREETING_PATTERNS: RegExp[] = [
 
 const GREETING_RESPONSE = "Hey! I'm Dmytro — ask me anything about my work and experience.";
 
+// Light conversational questions — short canned answer, no redirect
+const INTRO_PATTERNS: RegExp[] = [
+  /^what('s| is) your name\b/i,
+  /^who are you\b/i,
+  /^tell me about yourself\b/i,
+  /^introduce yourself\b/i,
+  /^what do you do\b/i,
+  /^how can i help (you)?\b/i,
+  /^(can|may) i (ask|help|know)\b/i,
+];
+
+const INTRO_RESPONSE =
+  "I'm Dmytro Tuzov — frontend engineer with 7+ years in Vue 3, TypeScript, and fintech. Ask me anything about my work!";
+
 // Allowlist: topics that are on-topic for a professional bio terminal.
 // If NONE of these match, the question is redirected without calling the LLM.
 const ON_TOPIC_PATTERNS: RegExp[] = [
@@ -154,9 +168,8 @@ const ON_TOPIC_PATTERNS: RegExp[] = [
   // Projects & portfolio
   /\bproject/i, /\bportfolio\b/i, /\bbuilt?\b/i, /\bship(ped)?\b/i,
   // Availability keywords removed — handled by HIRE_PATTERNS before this check
-  // Generic about-me conversation (greetings removed — handled by GREETING_PATTERNS)
-  /\bwho are you\b/i, /\bwhat do you do\b/i, /\btell me\b/i,
-  /\babout (you|yourself)\b/i, /\bintroduce\b/i, /\bdmytro\b/i,
+  // Generic about-me (simple forms handled by GREETING/INTRO_PATTERNS above)
+  /\btell me\b/i, /\babout (you|yourself)\b/i, /\bdmytro\b/i,
 ];
 
 const OFF_TOPIC_RESPONSE =
@@ -207,6 +220,10 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (GREETING_PATTERNS.some((p) => p.test(question))) {
     return json({ answer: GREETING_RESPONSE, contact: false }, 200);
+  }
+
+  if (INTRO_PATTERNS.some((p) => p.test(question))) {
+    return json({ answer: INTRO_RESPONSE, contact: false }, 200);
   }
 
   if (BLOCKED_INPUT_PATTERNS.some((p) => p.test(question))) {
