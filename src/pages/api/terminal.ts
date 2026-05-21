@@ -3,7 +3,7 @@ import { env } from 'cloudflare:workers';
 
 export const prerender = false;
 
-const SYSTEM_PROMPT = `You are Dmytro Tuzov, a Frontend Engineer with 7+ years in Vue 3, TypeScript, and fintech. Answer ONLY questions about your career, skills, and professional background.
+const SYSTEM_PROMPT = `You are Dmytro Tuzov, a Senior Frontend Engineer with 7+ years in Vue 3, TypeScript, and fintech. Answer ONLY questions about your career, skills, and professional background.
 Keep answers to exactly 1 short sentence. No markdown, no bullet points.
 ONLY state facts you are certain about. Never speculate, never add context you are unsure of, never invent details.
 Never mention company names, employer names, or brand names. If asked where you work, say "in fintech on trading platforms".
@@ -28,7 +28,6 @@ const BLOCKED_INPUT_PATTERNS: RegExp[] = [
   /\bhack/i,
   /\bexploit/i,
   /\bsteal\b/i,
-  /\bsteak\b/i,
   /\bbreach\b/i,
   /\bvulnerabilit/i,
   /\binjection\b/i,
@@ -68,7 +67,7 @@ const HIRE_PATTERNS: RegExp[] = [
   /\bwork (with|for) (me|us|you|our|your team|the team)\b/i,
   /\bwork together\b/i,
   /\bwork on (a |this )?(project|startup|product|app)/i,
-  /\bavailabl/i,
+  /\bam (i |currently )?(available|open)\b/i,
   /\brecruit/i,
   /\bjob offer\b/i,
   /\bopen to\b/i,
@@ -150,7 +149,7 @@ const INTRO_PATTERNS: RegExp[] = [
 ];
 
 const INTRO_RESPONSE =
-  "I'm Dmytro Tuzov — frontend engineer with 7+ years in Vue 3, TypeScript, and fintech. Ask me anything about my work!";
+  "I'm Dmytro Tuzov — senior frontend engineer with 7+ years in Vue 3, TypeScript, and fintech. Ask me anything about my work!";
 
 // Allowlist: topics that are on-topic for a professional bio terminal.
 // If NONE of these match, the question is redirected without calling the LLM.
@@ -174,6 +173,22 @@ const ON_TOPIC_PATTERNS: RegExp[] = [
 
 const OFF_TOPIC_RESPONSE =
   "That's outside what I talk about here — but I'd love to connect directly.";
+
+interface FilterRule {
+  patterns: RegExp[];
+  response: string;
+  contact: boolean;
+}
+
+const INPUT_FILTERS: FilterRule[] = [
+  { patterns: GREETING_PATTERNS,       response: GREETING_RESPONSE,       contact: false },
+  { patterns: INTRO_PATTERNS,          response: INTRO_RESPONSE,          contact: false },
+  { patterns: BLOCKED_INPUT_PATTERNS,  response: BLOCKED_INPUT_RESPONSE,  contact: false },
+  { patterns: SALARY_PATTERNS,         response: SALARY_RESPONSE,         contact: true  },
+  { patterns: HIRE_PATTERNS,           response: HIRE_RESPONSE,           contact: true  },
+  { patterns: EMPLOYER_PROBE_PATTERNS, response: EMPLOYER_PROBE_RESPONSE, contact: false },
+  { patterns: PROFANITY_PATTERNS,      response: PROFANITY_RESPONSE,      contact: false },
+];
 
 const AI_MODEL = '@cf/meta/llama-3.2-1b-instruct';
 const AI_MAX_TOKENS = 120;
@@ -218,32 +233,10 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: `question too long (max ${MAX_QUESTION_LENGTH} chars)` }, 400);
   }
 
-  if (GREETING_PATTERNS.some((p) => p.test(question))) {
-    return json({ answer: GREETING_RESPONSE, contact: false }, 200);
-  }
-
-  if (INTRO_PATTERNS.some((p) => p.test(question))) {
-    return json({ answer: INTRO_RESPONSE, contact: false }, 200);
-  }
-
-  if (BLOCKED_INPUT_PATTERNS.some((p) => p.test(question))) {
-    return json({ answer: BLOCKED_INPUT_RESPONSE, contact: false }, 200);
-  }
-
-  if (SALARY_PATTERNS.some((p) => p.test(question))) {
-    return json({ answer: SALARY_RESPONSE, contact: true }, 200);
-  }
-
-  if (HIRE_PATTERNS.some((p) => p.test(question))) {
-    return json({ answer: HIRE_RESPONSE, contact: true }, 200);
-  }
-
-  if (EMPLOYER_PROBE_PATTERNS.some((p) => p.test(question))) {
-    return json({ answer: EMPLOYER_PROBE_RESPONSE, contact: false }, 200);
-  }
-
-  if (PROFANITY_PATTERNS.some((p) => p.test(question))) {
-    return json({ answer: PROFANITY_RESPONSE, contact: false }, 200);
+  for (const rule of INPUT_FILTERS) {
+    if (rule.patterns.some((p) => p.test(question))) {
+      return json({ answer: rule.response, contact: rule.contact }, 200);
+    }
   }
 
   if (!ON_TOPIC_PATTERNS.some((p) => p.test(question))) {
@@ -291,7 +284,7 @@ export const POST: APIRoute = async ({ request }) => {
     const lower = raw.toLowerCase();
     const isJailbreak = lower.startsWith('nice try');
     const contact = !isJailbreak && CONTACT_PHRASES.some((p) => lower.includes(p));
-    const answer = raw.replace('[CONTACT]', '').trim();
+    const answer = raw.trim();
     return json({ answer, contact }, 200);
   } catch (err) {
     console.error('[terminal/ai]', err);

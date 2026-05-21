@@ -242,6 +242,36 @@ describe('TerminalCard — implicit AI routing', () => {
     expect(wrapper.text()).toContain('connection error');
     expect(wrapper.find('.terminal__output--error').exists()).toBe(true);
   });
+
+  it('shows contact link when data.contact is true', async () => {
+    mockFetch(200, { answer: 'Happy to discuss.', contact: true });
+
+    const wrapper = await mountInteractive();
+    await runCmd(wrapper, 'are you open to work?');
+    await flushPromises();
+
+    expect(wrapper.find('.terminal__contact-link').exists()).toBe(true);
+  });
+
+  it('does not show contact link when data.contact is false', async () => {
+    mockFetch(200, { answer: 'I use Vue 3.', contact: false });
+
+    const wrapper = await mountInteractive();
+    await runCmd(wrapper, 'what is your stack?');
+    await flushPromises();
+
+    expect(wrapper.find('.terminal__contact-link').exists()).toBe(false);
+  });
+
+  it('shows contact link on 429 response', async () => {
+    mockFetch(429, { error: 'rate limit' });
+
+    const wrapper = await mountInteractive();
+    await runCmd(wrapper, 'ask anything');
+    await flushPromises();
+
+    expect(wrapper.find('.terminal__contact-link').exists()).toBe(true);
+  });
 });
 
 describe('TerminalCard — exiting interactive mode', () => {

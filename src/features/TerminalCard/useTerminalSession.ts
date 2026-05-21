@@ -38,6 +38,11 @@ export function useTerminalSession(scrollToBottom: () => void) {
   const cmdHistoryIndex = ref(-1);
   const emptyEnterCount = ref(0);
 
+  async function scrollAfter() {
+    await nextTick();
+    scrollToBottom();
+  }
+
   function pushHistory(entry: HistoryEntry) {
     outputHistory.value.push(entry);
     if (outputHistory.value.length > MAX_HISTORY) {
@@ -79,8 +84,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
         output: `question too long (max ${MAX_QUESTION_LENGTH} chars)`,
         type: 'error',
       });
-      await nextTick();
-      scrollToBottom();
+      await scrollAfter();
       return;
     }
 
@@ -88,8 +92,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
 
     const idx = outputHistory.value.length;
     pushHistory({ command: raw, output: 'thinking...', type: 'info' });
-    await nextTick();
-    scrollToBottom();
+    await scrollAfter();
 
     try {
       const res = await fetch('/api/terminal', {
@@ -127,8 +130,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
       };
     }
 
-    await nextTick();
-    scrollToBottom();
+    await scrollAfter();
   }
 
   async function execute() {
@@ -140,8 +142,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
       if (emptyEnterCount.value < MAX_EMPTY_HINTS) {
         emptyEnterCount.value++;
         pushHistory({ command: '', output: "ask me something, or type 'help' for tips", type: 'info' });
-        await nextTick();
-        scrollToBottom();
+        await scrollAfter();
       }
       return;
     }
@@ -157,8 +158,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
     if (lower === 'help') {
       addToCmd(raw);
       pushHistory({ command: raw, output: HELP_OUTPUT, type: 'info' });
-      await nextTick();
-      scrollToBottom();
+      await scrollAfter();
       return;
     }
 
@@ -168,8 +168,7 @@ export function useTerminalSession(scrollToBottom: () => void) {
         output: 'usage: ask [question] — or just type directly',
         type: 'error',
       });
-      await nextTick();
-      scrollToBottom();
+      await scrollAfter();
       return;
     }
 
