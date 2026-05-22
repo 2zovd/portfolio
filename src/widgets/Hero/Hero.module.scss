@@ -6,6 +6,10 @@
   margin: 0 auto;
   position: relative;
   overflow: hidden;
+
+  @media (max-width: #{$bp-md - 1px}) {
+    padding: var(--space-12) var(--space-6) var(--space-8);
+  }
 }
 
 .hero__grid {
@@ -122,6 +126,10 @@
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--color-text);
+
+  @media (max-width: #{$bp-md - 1px}) {
+    font-size: var(--font-size-5xl);
+  }
 }
 
 // ─── Description ─────────────────────────────────────────────────────────────
