@@ -324,6 +324,7 @@ const staticLines = [
 @media (hover: none) and (pointer: coarse) {
   .terminal__input {
     font-size: 16px;
+    caret-color: var(--color-accent);
   }
 }
 
@@ -353,6 +354,10 @@ const staticLines = [
     @media (prefers-reduced-motion: reduce) {
       animation: none;
       opacity: 1;
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      display: none;
     }
   }
 }
