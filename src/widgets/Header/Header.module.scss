@@ -24,7 +24,8 @@
   gap: var(--space-2);
   text-decoration: none;
   color: var(--color-text);
-  flex-shrink: 0;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .logo__name {
@@ -42,6 +43,10 @@
   font-size: var(--font-size-base);
   font-weight: 400;
   color: var(--color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 // Pill navigation

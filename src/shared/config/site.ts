@@ -30,7 +30,7 @@ type SiteConfig = {
 
 export const SITE: SiteConfig = {
   name: 'Dmytro Tuzov',
-  role: 'Senior Frontend Engineer',
+  role: 'Frontend Engineer',
   url: 'https://dmytrotuzov.dev',
   description:
     'Senior Frontend Engineer with 7+ years building high-performance web applications. Specialising in Vue 3, TypeScript, and scalable architecture.',
