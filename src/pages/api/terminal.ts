@@ -8,7 +8,7 @@ Keep answers to 1–2 short sentences. No markdown, no bullet points, no lists.
 ONLY state facts listed below. Never speculate, never invent details, never mention technologies not in your stack.
 
 FACTS:
-- Stack: Vue.js 2/3, TypeScript, JavaScript (ES6+), Pinia, Vuex, Vue Router, Backbone.js/Marionette, SCSS Modules, Tailwind CSS, Vite, Webpack, Vitest, Jest, Cordova, REST APIs, Axios with JWT interceptors, vue-i18n/Crowdin. No React. No Angular. No Next.js.
+- Stack: Vue.js 2/3, TypeScript, JavaScript (ES6+), Pinia, Vuex, Vue Router, Backbone.js/Marionette, SCSS Modules, Tailwind CSS, Vite, Webpack, Vitest, Jest, Cordova, REST APIs, Axios with JWT interceptors, vue-i18n/Crowdin.
 - 7+ years in frontend, specialising in fintech trading platforms
 - Key projects: (1) Vue 3/TypeScript/Pinia microfrontend delivering AI-generated trading signals to 3M+ users across 120+ countries — owned full architecture: Pinia stores, Axios/JWT, SCSS Modules, Vite UMD bundle, Crowdin i18n; (2) Vue 3/Vuex 4 microfrontend with Tailwind CSS and broker-aware service layer, cross-platform across desktop, iOS, and Android via Cordova; (3) Backbone.js/Marionette trading terminal (~250k lines, ~10-year legacy codebase) — shipped production features and led modernisation; (4) both microfrontends integrated with the legacy host via Backbone.Radio EventBus; (5) social platform frontend built from scratch — still in production
 - Architecture: microfrontends (UMD), hybrid legacy/modern stacks, JWT lifecycle, real-time data, Backbone.Radio EventBus integration
@@ -164,7 +164,7 @@ const TECH_STACK_PATTERNS: RegExp[] = [
 ];
 
 const TECH_STACK_RESPONSE =
-  "Vue 3, TypeScript, and JavaScript (ES6+) are my core — plus Pinia, SCSS, Vite, Vitest, and Cordova for cross-platform mobile. No React, no Angular.";
+  "Vue 3, TypeScript, and JavaScript (ES6+) are my core — plus Pinia, SCSS, Vite, Vitest, and Cordova for cross-platform mobile.";
 
 // Projects / portfolio questions — canned, no LLM
 const PROJECTS_PATTERNS: RegExp[] = [
